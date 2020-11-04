@@ -1,4 +1,4 @@
-# Pokémon Emerald
+# Pokémon Renegade Emerald
 
 [![Build Status][travis-badge]][travis]
 
@@ -6,31 +6,19 @@
 [travis-badge]: https://travis-ci.org/pret/pokeemerald.svg?branch=master
 
 This is a decompilation of Pokémon Emerald.
-
-It builds the following ROM:
-
-* [**pokeemerald.gba**](https://datomatic.no-intro.org/index.php?page=show_record&s=23&n=1961) `sha1: f3ae088181bf583e55daf962a92bb46f4f1d07b7`
+The unmodiffied decomp repo can be found [here](https://github.com/pret/pokeemerald)
+This project also uses some features of the [RHH expansions](https://github.com/rh-hideout/pokeemerald-expansion).
 
 To set up the repository, see [INSTALL.md](INSTALL.md).
 
+### Why another Emerald decomp?
 
-## See also
+The main goal of this project is to develop an improved version, more difficult and at the same time more entertaining, of the GBA Pokémon game. For this, some features of the newer versions will be implemented, but in many cases new mechanics will be created to meet the following lines:
 
-Other disassembly and/or decompilation projects:
-* [**Pokémon Red and Blue**](https://github.com/pret/pokered)
-* [**Pokémon Gold and Silver (Space World '97 demo)**](https://github.com/pret/pokegold-spaceworld)
-* [**Pokémon Yellow**](https://github.com/pret/pokeyellow)
-* [**Pokémon Trading Card Game**](https://github.com/pret/poketcg)
-* [**Pokémon Pinball**](https://github.com/pret/pokepinball)
-* [**Pokémon Stadium**](https://github.com/pret/pokestadium)
-* [**Pokémon Gold and Silver**](https://github.com/pret/pokegold)
-* [**Pokémon Crystal**](https://github.com/pret/pokecrystal)
-* [**Pokémon Ruby and Sapphire**](https://github.com/pret/pokeruby)
-* [**Pokémon Pinball: Ruby & Sapphire**](https://github.com/pret/pokepinballrs)
-* [**Pokémon FireRed and LeafGreen**](https://github.com/pret/pokefirered)
-* [**Pokémon Mystery Dungeon: Red Rescue Team**](https://github.com/pret/pmd-red)
-
-
-## Contacts
-
-You can find us on [Discord](https://discord.gg/d5dubZ3) and [IRC](https://kiwiirc.com/client/irc.freenode.net/?#pret).
+- Friendship will play a bigger role in the training and evolution of Pokémon.
+- The new EVs system will allow Pokémon to be trained as the game progresses and in a more comfortable way, rather than forcing the player to complete all the EVs at the beginning (in other words, there will no longer be reasons for the Poochyenas genocide XD).
+- The Pokédex can be completed without trading. However, not all the species of the new generations will be added to the game. There are a lot of useless and repeated Pokémon that there is no point in adding.
+- Gradually completing of the Pokédex will be a requirement to progress in the game.
+- All Pokémon and items will be obtainable an unlimited number of times without cheating (That does not mean it will always be easy).
+- Pokémon stats will be balanced so that they are all equally viable.
+- All battles in the game (including wild encounters) will be double battles.
