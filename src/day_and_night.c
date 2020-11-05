@@ -3,12 +3,12 @@
 #include "rtc.h"
 
 /* End hours for each of the timelapses */
-#define DAY_END_HOUR        19      //08 - 19
-#define NIGHT_END_HOUR      0       //21 - 00
+#define NIGHTFALL_END_HOUR        19
+#define DAWN_END_HOUR              7       
 
 bool8 IsDayTime()
 {
-    if (gLocalTime.hours >= NIGHT_END_HOUR && gLocalTime.hours < DAY_END_HOUR)
+    if (gLocalTime.hours >= DAWN_END_HOUR && gLocalTime.hours < NIGHTFALL_END_HOUR)
         return TRUE;
     return FALSE;
 }
