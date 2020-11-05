@@ -17,6 +17,7 @@
 #include "battle_debug.h"
 #include "battle_pike.h"
 #include "battle_pyramid.h"
+#include "day_and_night.h"
 #include "constants/abilities.h"
 #include "constants/battle_config.h"
 #include "constants/game_stat.h"
@@ -284,8 +285,8 @@ static u16 GetCurrentMapWildMonHeaderId(void)
 
                 i += alteringCaveId;
             }
-
-            return i;
+            if ((i == 0 && IsDayTime()) || (i == 1 && IsNightTime()))
+                return i;
         }
     }
 
