@@ -2025,7 +2025,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             }
         }
 
-        gBattleTypeFlags |= gTrainers[trainerNum].doubleBattle;
+        gBattleTypeFlags |= (GetMonsStateToDoubles() == PLAYER_HAS_TWO_USABLE_MONS && monsCount > 1);
     }
 
     return gTrainers[trainerNum].partySize;
