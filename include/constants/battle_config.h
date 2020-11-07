@@ -116,7 +116,6 @@
 // Flag settings.
 // To use the following features in scripting, replace the 0s with the flag ID you're assigning it to. Eg: Replace with FLAG_UNUSED_0x264 so you can use that flag for toggling the feature.
 #define B_FLAG_INVERSE_BATTLE       0     // If this flag is set, the battle's type effectiveness are inversed. For example, fire is super effective against water.
-#define B_FLAG_FORCE_DOUBLE_WILD    0     // If this flag is set, all land and surfing wild battles will be double battles.
 
 // Interface settings
 #define B_ABILITY_POP_UP            TRUE  // In Gen5+, the Pokémon abilities are displayed in a pop-up, when they activate in battle.
