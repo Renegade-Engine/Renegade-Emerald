@@ -73,5 +73,7 @@ void FreeConditionSparkles(struct Sprite **sprites);
 void DrawLevelUpWindowPg1(u16 windowId, u16 *statsBefore, u16 *statsAfter, u8 bgClr, u8 fgClr, u8 shadowClr);
 void DrawLevelUpWindowPg2(u16 windowId, u16 *currStats, u8 bgClr, u8 fgClr, u8 shadowClr);
 void GetMonLevelUpWindowStats(struct Pokemon *mon, u16 *currStats);
+void GetMonEVsWindowStats(struct Pokemon *mon, u16 *currStats);
+void DrawGiveEVsWindowPg1(u16 windowId, u8 cursorPos, u16 *currStats, u8 bgClr, u8 fgClr, u8 shadowClr);
 
 #endif // GUARD_MENU_SPECIALIZED_H
