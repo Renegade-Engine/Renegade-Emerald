@@ -287,6 +287,7 @@ static u32 ChangeStatBuffs(s8 statValue, u32 statId, u32 flags, const u8 *BS_ptr
 static bool32 IsMonGettingExpSentOut(void);
 static void sub_804F17C(void);
 static bool8 sub_804F1CC(void);
+static void DrawGiveEVsWindow(void);
 static void DrawLevelUpWindow1(void);
 static void DrawLevelUpWindow2(void);
 static bool8 sub_804F344(void);
@@ -3786,7 +3787,7 @@ static void Cmd_getexp(void)
                     PREPARE_WORD_NUMBER_BUFFER(gBattleTextBuff3, 5, gBattleMoveDamage);
 
                     PrepareStringBattle(STRINGID_PKMNGAINEDEXP, gBattleStruct->expGetterBattlerId);
-                    MonGainEVs(&gPlayerParty[gBattleStruct->expGetterMonId], gBattleMons[gBattlerFainted].species);
+                    MonGainEVs(&gPlayerParty[gBattleStruct->expGetterMonId], gBattleMons[gBattlerFainted].level);
                 }
                 gBattleStruct->sentInPokes >>= 1;
                 gBattleScripting.getexpState++;
@@ -6526,6 +6527,8 @@ static void Cmd_atknameinbuff1(void)
 
 static void Cmd_drawlvlupbox(void)
 {
+    u16 currStats[NUM_STATS];
+
     if (gBattleScripting.drawlvlupboxState == 0)
     {
         if (IsMonGettingExpSentOut())
@@ -6555,13 +6558,80 @@ static void Cmd_drawlvlupbox(void)
         ShowBg(0);
         ShowBg(1);
         HandleBattleWindow(0x12, 7, 0x1D, 0x13, WINDOW_x80);
-        gBattleScripting.drawlvlupboxState = 4;
+        if (GetMonEVCount(&gPlayerParty[gBattleStruct->expGetterMonId]) == MAX_TOTAL_EVS)
+			gBattleScripting.drawlvlupboxState = 16;
+		else
+			gBattleScripting.drawlvlupboxState = 12;
         break;
-    case 4:
-        DrawLevelUpWindow1();
+    case 12:
+		gBattleScripting.giveEVsCursorPos = 0;
+        DrawGiveEVsWindow();
         PutWindowTilemap(13);
         CopyWindowToVram(13, 3);
-        gBattleScripting.drawlvlupboxState++;
+        gBattleScripting.drawlvlupboxState++;        
+        break;
+    case 13:
+    case 15:
+        if (!IsDma3ManagerBusyWithBgCopy())
+        {
+            gBattle_BG1_Y = 0;
+            gBattleScripting.drawlvlupboxState++;
+        }
+        break;
+    case 14:
+        if (gMain.newKeys & DPAD_UP)
+        {
+            if (gBattleScripting.giveEVsCursorPos == 0)
+                gBattleScripting.giveEVsCursorPos = 5;
+            else
+                gBattleScripting.giveEVsCursorPos -= 1;
+            PlaySE(SE_SELECT);
+            DrawGiveEVsWindow();
+            CopyWindowToVram(13, 3);
+        }
+        if (gMain.newKeys & DPAD_DOWN)
+        {
+            if (gBattleScripting.giveEVsCursorPos == 5)
+                gBattleScripting.giveEVsCursorPos = 0;
+            else
+                gBattleScripting.giveEVsCursorPos += 1;
+            PlaySE(SE_SELECT);
+            DrawGiveEVsWindow();
+            CopyWindowToVram(13, 3);
+        }
+        if (gMain.newKeys & A_BUTTON)
+        {
+			GetMonEVsWindowStats(&gPlayerParty[gBattleStruct->expGetterMonId], currStats);
+			if (currStats[gBattleScripting.giveEVsCursorPos] == MAX_PER_STAT_EVS)
+			{
+				PlaySE(SE_BOO);
+			}
+			else
+			{
+				PlaySE(SE_SELECT);
+				MonGainsEVsOnStat(&gPlayerParty[gBattleStruct->expGetterMonId], gBattleScripting.giveEVsCursorPos);
+				gBattleScripting.giveEVsCursorPos = 6;
+				DrawGiveEVsWindow();
+				CopyWindowToVram(13, 3);
+				gBattleScripting.drawlvlupboxState = 4;
+			}            
+        }
+        break;
+	case 16:
+		PlaySE(SE_SELECT);
+        DrawLevelUpWindow1();
+		PutWindowTilemap(13);
+        CopyWindowToVram(13, 3);
+        gBattleScripting.drawlvlupboxState = 5;
+		break;
+    case 4:
+        if (gMain.newKeys != 0)
+        {
+            PlaySE(SE_SELECT);
+            DrawLevelUpWindow1();
+            CopyWindowToVram(13, 3);
+            gBattleScripting.drawlvlupboxState++;
+        }
         break;
     case 5:
     case 7:
@@ -6615,6 +6685,15 @@ static void Cmd_drawlvlupbox(void)
         break;
     }
 }
+
+static void DrawGiveEVsWindow(void) 
+{
+    u16 currStats[NUM_STATS];
+
+    GetMonEVsWindowStats(&gPlayerParty[gBattleStruct->expGetterMonId], currStats);
+    DrawGiveEVsWindowPg1(0xD, gBattleScripting.giveEVsCursorPos, currStats, TEXT_DYNAMIC_COLOR_5, TEXT_DYNAMIC_COLOR_4, TEXT_DYNAMIC_COLOR_6);
+}
+
 
 static void DrawLevelUpWindow1(void)
 {
