@@ -23,14 +23,14 @@ Install the devkitARM toolchain of devkitPro as per [the instructions on their w
 
 To set up the repository:
 
-	git clone https://github.com/pret/pokeemerald
+	git clone https://github.com/rglezg/Renegade-Emerald
 	git clone https://github.com/pret/agbcc
 
 	cd ./agbcc
 	./build.sh
-	./install.sh ../pokeemerald
+	./install.sh ../Renegade-Emerald
 
-	cd ../pokeemerald
+	cd ../Renegade-Emerald
 
 To build **pokeemerald.gba** for the first time and confirm it matches the official ROM image:
 
