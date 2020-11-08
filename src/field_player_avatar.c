@@ -636,8 +636,12 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
 
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_SURFING)
     {
-    // speed 2 is fast, same speed as running
-        PlayerGoSpeed2(direction);
+        if (heldKeys & B_BUTTON)
+            // speed 2 is same as mach bike
+            PlayerGoSpeed4(direction);
+        else
+            // speed 2 is fast, same speed as running
+            PlayerGoSpeed2(direction);
         return;
     }
 
