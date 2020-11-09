@@ -10,7 +10,7 @@ Even if you are not a programmer, there are many things you can do to help with 
 
 ## Contributing code and content
 
-We accept fixes and new features, as long as they are not listed in the [What this is NOT](README.md#what-this-is-not) section of the readme.  
+We accept fixes and new features, as long as they are not listed in the [What this is NOT](https://github.com/rglezg/Renegade-Emerald/blob/repo/readme/README.md#what-is-this-not) section of the readme.  
 
 ### Getting started
 
