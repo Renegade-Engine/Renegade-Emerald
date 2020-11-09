@@ -1,8 +1,7 @@
-<!--- Provide a general summary of your changes in the Title above -->
+### Description
+<!--A clear and concise description of what problem you are solving. Link to an issue if applicable.-->
 
-## Description
-<!--- Describe your changes in detail -->
-
-## **Discord contact info**
-<!--- formatted as name#numbers, e.g. PikalaxALT#5823 -->
-<!--- Contributors must join https://discord.gg/d5dubZ3 -->
+### Proposed changes
+<!--- List the changes you are making. Mark them as you get them done. -->
+- [ ] First change.
+- [ ] Second change.
