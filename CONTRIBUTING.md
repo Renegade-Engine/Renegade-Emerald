@@ -10,7 +10,7 @@ Even if you are not a programmer, there are many things you can do to help with 
 
 ## Contributing code and content
 
-We accept fixes and new features, as long as they are not listed in the [What this is NOT](README.md#what-this-is-not) section of the readme.  
+We accept fixes and new features, as long as they are not listed in the [What this is NOT](https://github.com/rglezg/Renegade-Emerald/blob/repo/readme/README.md#what-is-this-not) section of the readme.  
 
 ### Getting started
 
@@ -33,6 +33,6 @@ Pull requests are the best way to propose changes to the codebase. If you want t
    - If don't meet any of the provious conditions, create your branch from `main`.
   
 3. Name the branch `feat/name_of_feature` if is a new feature, or `fix/name_of_problem` if is a bug or spelling fix.
-4. [Create the pull request](https://github.com/rglezg/Renegade-Emerald/compare).
+4. [Create the pull request](https://github.com/rglezg/Renegade-Emerald/compare) for merging your changes into `main`.
 5. Make your changes and test all of them.
 6. Once you get your work done, remove the `work in progress` label and wait for a review.
