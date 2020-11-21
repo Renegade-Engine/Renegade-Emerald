@@ -58,6 +58,7 @@ int GameClear(void)
             SetMonData(mon, MON_DATA_CHAMPION_RIBBON, val);
             ribbonCounts[i].count = GetRibbonCount(mon);
             ribbonGet = TRUE;
+            AdjustFriendship(mon, FRIENDSHIP_EVENT_LEAGUE_CHAMPION);
         }
     }
 

@@ -555,9 +555,6 @@ static void CB2_InitBattleInternal(void)
     gMain.inBattle = TRUE;
     gSaveBlock2Ptr->frontier.disableRecordBattle = FALSE;
 
-    for (i = 0; i < PARTY_SIZE; i++)
-        AdjustFriendship(&gPlayerParty[i], FRIENDSHIP_EVENT_LEAGUE_BATTLE);
-
     gBattleCommunication[MULTIUSE_STATE] = 0;
 }
 
@@ -4668,6 +4665,10 @@ static void HandleEndTurn_BattleWon(void)
         default:
             PlayBGM(MUS_VICTORY_TRAINER);
             break;
+        }
+
+        for (i = 0; i < PARTY_SIZE; i++) {
+            AdjustFriendship(&gPlayerParty[i], FRIENDSHIP_EVENT_TRAINER_BATTLE);
         }
     }
     else
