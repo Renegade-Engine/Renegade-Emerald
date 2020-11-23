@@ -10,6 +10,7 @@
 #include "battle_setup.h"
 #include "battle_tower.h"
 #include "data.h"
+#include "daycare.h"
 #include "event_data.h"
 #include "evolution_scene.h"
 #include "field_specials.h"
@@ -5399,6 +5400,7 @@ void AdjustFriendship(struct Pokemon *mon, u8 event)
 {
     u16 species, heldItem;
     u8 holdEffect;
+    s8 mod;
 
     if (ShouldSkipFriendshipChange())
         return;
@@ -5433,12 +5435,13 @@ void AdjustFriendship(struct Pokemon *mon, u8 event)
             event = FRIENDSHIP_EVENT_LEAGUE_BATTLE;
         }
 
-        s8 mod = sFriendshipEventModifiers[event][friendshipLevel];
+        mod = sFriendshipEventModifiers[event][friendshipLevel];
         if (mod > 0 && holdEffect == HOLD_EFFECT_HAPPINESS_UP)
             mod = (150 * mod) / 100;
         friendship += mod;
         if (mod > 0)
         {
+            UpdateEggCycles(mod);
             if (GetMonData(mon, MON_DATA_POKEBALL, 0) == ITEM_LUXURY_BALL)
                 friendship++;
             if (GetMonData(mon, MON_DATA_MET_LOCATION, 0) == GetCurrentRegionMapSectionId())
