@@ -14,6 +14,7 @@
 #include "event_data.h"
 #include "evolution_scene.h"
 #include "field_specials.h"
+#include "global.h"
 #include "item.h"
 #include "link.h"
 #include "main.h"
@@ -5555,7 +5556,7 @@ void MonGainsEVsOnStat(struct Pokemon *mon, u8 stat)
         int val2 = evs + evIncrease;
         evIncrease = val1 - val2;
     }
-
+    evIncrease = clamp(evIncrease, 1, GetMonData(mon, MON_DATA_FRIENDSHIP, 0) / 20);
     evs += evIncrease;
     totalEVs += evIncrease;
 	sum = 0;
