@@ -3788,6 +3788,7 @@ static void Cmd_getexp(void)
 
                     PrepareStringBattle(STRINGID_PKMNGAINEDEXP, gBattleStruct->expGetterBattlerId);
                     MonGainEVs(&gPlayerParty[gBattleStruct->expGetterMonId], gBattleMons[gBattlerFainted].level);
+                    gBattleStruct->gainedExpMons |= gBitTable[gBattleStruct->expGetterMonId];
                 }
                 gBattleStruct->sentInPokes >>= 1;
                 gBattleScripting.getexpState++;
