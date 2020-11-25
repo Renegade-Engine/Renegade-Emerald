@@ -284,13 +284,14 @@ static u16 GetCurrentMapWildMonHeaderId(void)
                     alteringCaveId = 0;
 
                 i += alteringCaveId;
+                return i;
             }
             if ((i == 0 && IsDayTime()) || (i == 1 && IsNightTime()))
                 return i;
         }
     }
 
-    return -1;
+    return 0;
 }
 
 static u8 PickWildMonNature(void)
