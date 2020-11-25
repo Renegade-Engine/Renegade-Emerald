@@ -535,3 +535,10 @@ gSpecials:: @ 81DBA64
 	def_special RemoveRecordsWindow
 	def_special CloseDeptStoreElevatorWindow
 	def_special TrySetBattleTowerLinkType
+	def_special CheckPartyHasMonWithSurf
+	def_special CheckPartyHasMonWithDive
+	def_special CheckPartyHasMonWithWaterfall
+	def_special CheckPartyHasMonWithCut
+	def_special CheckPartyHasMonWithStreght
+	def_special CheckPartyHasMonWithRockSmash
+	
