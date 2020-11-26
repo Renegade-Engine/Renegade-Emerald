@@ -2898,6 +2898,7 @@ u16 MonTryLearningNewMoveEvolution(struct Pokemon *mon, bool8 firstMove)
 {
     u16 species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     u8 level = GetMonData(mon, MON_DATA_LEVEL, NULL);
+    u16 moveLevel;
 
     // since you can learn more than one move per level
     // the game needs to know whether you decided to
@@ -2909,13 +2910,16 @@ u16 MonTryLearningNewMoveEvolution(struct Pokemon *mon, bool8 firstMove)
     }
     while(gLevelUpLearnsets[species][sLearningMoveTableID].move != LEVEL_UP_END)
     {
-        u16 moveLevel;
-        moveLevel = (gLevelUpLearnsets[species][sLearningMoveTableID].move & LEVEL_UP_MOVE_LV);
-        while (moveLevel == 0 || moveLevel == (level << 9))
+        moveLevel = gLevelUpLearnsets[species][sLearningMoveTableID].level;
+        if (moveLevel == 0 || moveLevel == level)
         {
             gMoveToLearn = (gLevelUpLearnsets[species][sLearningMoveTableID].move & LEVEL_UP_MOVE_ID);
             sLearningMoveTableID++;
             return GiveMoveToMon(mon, gMoveToLearn);
+        }
+        else if (moveLevel > level)
+        {
+            return 0;
         }
         sLearningMoveTableID++;
     }

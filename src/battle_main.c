@@ -234,7 +234,7 @@ EWRAM_DATA u16 gPartnerSpriteId = 0;
 void (*gPreBattleCallback1)(void);
 void (*gBattleMainFunc)(void);
 struct BattleResults gBattleResults;
-u8 gLeveledUpInBattle;
+u8 gGainedExpInBattle;
 void (*gBattlerControllerFuncs[MAX_BATTLERS_COUNT])(void);
 u8 gHealthboxSpriteIds[MAX_BATTLERS_COUNT];
 u8 gMultiUsePlayerCursor;
@@ -2913,7 +2913,7 @@ static void BattleStartClearSetData(void)
     gIntroSlideFlags = 0;
     gBattleScripting.animTurn = 0;
     gBattleScripting.animTargetsHit = 0;
-    gLeveledUpInBattle = 0;
+    gGainedExpInBattle = 0;
     gAbsentBattlerFlags = 0;
     gBattleStruct->runTries = 0;
     gBattleStruct->safariGoNearCounter = 0;
@@ -4669,11 +4669,10 @@ static void HandleEndTurn_BattleWon(void)
         }
 
         for (i = 0; i < PARTY_SIZE; i++) {
-            if (gBattleStruct->gainedExpMons & gBitTable[i] && (GetMonData(&gPlayerParty[i], MON_DATA_HP) != 0)) {
+            if (gGainedExpInBattle & gBitTable[i] && (GetMonData(&gPlayerParty[i], MON_DATA_HP) != 0)) {
                 AdjustFriendship(&gPlayerParty[i], FRIENDSHIP_EVENT_TRAINER_BATTLE);
             }
         }
-        gBattleStruct->gainedExpMons &= 0;
     }
     else
     {
@@ -4832,7 +4831,7 @@ static void FreeResetData_ReturnToOvOrDoEvolutions(void)
     if (!gPaletteFade.active)
     {
         ResetSpriteData();
-        if (gLeveledUpInBattle && (gBattleOutcome == B_OUTCOME_WON || gBattleOutcome == B_OUTCOME_CAUGHT))
+        if (gGainedExpInBattle && (gBattleOutcome == B_OUTCOME_WON || gBattleOutcome == B_OUTCOME_CAUGHT))
         {
             gBattleMainFunc = TryEvolvePokemon;
         }
@@ -4856,17 +4855,17 @@ static void TryEvolvePokemon(void)
 {
     s32 i;
 
-    while (gLeveledUpInBattle != 0)
+    while (gGainedExpInBattle != 0)
     {
         for (i = 0; i < PARTY_SIZE; i++)
         {
-            if (gLeveledUpInBattle & gBitTable[i])
+            if (gGainedExpInBattle & gBitTable[i] && (GetMonData(&gPlayerParty[i], MON_DATA_HP) != 0))
             {
                 u16 species;
-                u8 levelUpBits = gLeveledUpInBattle;
+                u8 levelUpBits = gGainedExpInBattle;
 
                 levelUpBits &= ~(gBitTable[i]);
-                gLeveledUpInBattle = levelUpBits;
+                gGainedExpInBattle = levelUpBits;
 
                 species = GetEvolutionTargetSpecies(&gPlayerParty[i], 0, levelUpBits);
                 if (species != SPECIES_NONE)
