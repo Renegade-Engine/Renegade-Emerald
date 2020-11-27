@@ -29,6 +29,7 @@
 #include "main.h"
 #include "malloc.h"
 #include "m4a.h"
+#include "overworld.h"
 #include "palette.h"
 #include "party_menu.h"
 #include "pokeball.h"
@@ -60,6 +61,7 @@
 #include "constants/rgb.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
+#include "constants/tv.h"
 #include "cable_club.h"
 
 extern struct MusicPlayerInfo gMPlayInfo_SE1;
@@ -113,6 +115,7 @@ static void TryEvolvePokemon(void);
 static void WaitForEvoSceneToFinish(void);
 static void HandleEndTurn_ContinueBattle(void);
 static void HandleEndTurn_BattleWon(void);
+static void TryGiveChampionRibbonToParty(void);
 static void HandleEndTurn_BattleLost(void);
 static void HandleEndTurn_RanFromBattle(void);
 static void HandleEndTurn_MonFled(void);
@@ -4673,6 +4676,10 @@ static void HandleEndTurn_BattleWon(void)
                 AdjustFriendship(&gPlayerParty[i], FRIENDSHIP_EVENT_TRAINER_BATTLE);
             }
         }
+        if (gTrainers[gTrainerBattleOpponent_A].trainerClass == TRAINER_CLASS_CHAMPION)
+        {
+            TryGiveChampionRibbonToParty();
+        }
     }
     else
     {
@@ -4680,6 +4687,57 @@ static void HandleEndTurn_BattleWon(void)
     }
 
     gBattleMainFunc = HandleEndTurn_FinishBattle;
+}
+
+static void TryGiveChampionRibbonToParty()
+{
+    int i;
+    bool32 ribbonGet;
+    struct RibbonCounter {
+        u8 partyIndex;
+        u8 count;
+    } ribbonCounts[6];
+    ribbonGet = FALSE;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        struct Pokemon *mon = &gPlayerParty[i];
+
+        ribbonCounts[i].partyIndex = i;
+        ribbonCounts[i].count = 0;
+
+        if (GetMonData(mon, MON_DATA_SANITY_HAS_SPECIES)
+            && !GetMonData(mon, MON_DATA_SANITY_IS_EGG)
+            && !GetMonData(mon, MON_DATA_CHAMPION_RIBBON))
+        {
+            u8 val[1] = {TRUE};
+            SetMonData(mon, MON_DATA_CHAMPION_RIBBON, val);
+            ribbonCounts[i].count = GetRibbonCount(mon);
+            ribbonGet = TRUE;
+            AdjustFriendship(mon, FRIENDSHIP_EVENT_LEAGUE_CHAMPION);
+        }
+    }
+
+    if (ribbonGet == TRUE)
+    {
+        IncrementGameStat(GAME_STAT_RECEIVED_RIBBONS);
+        FlagSet(FLAG_SYS_RIBBON_GET);
+
+        for (i = 1; i < 6; i++)
+        {
+            if (ribbonCounts[i].count > ribbonCounts[0].count)
+            {
+                struct RibbonCounter prevBest = ribbonCounts[0];
+                ribbonCounts[0] = ribbonCounts[i];
+                ribbonCounts[i] = prevBest;
+            }
+        }
+
+        if (ribbonCounts[0].count > NUM_CUTIES_RIBBONS)
+        {
+            TryPutSpotTheCutiesOnAir(&gPlayerParty[ribbonCounts[0].partyIndex], MON_DATA_CHAMPION_RIBBON);
+        }
+    }
 }
 
 static void HandleEndTurn_BattleLost(void)
