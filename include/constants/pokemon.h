@@ -227,6 +227,10 @@
 #define FRIENDSHIP_EVENT_LEAGUE_CHAMPION  10
 
 #define MAX_FRIENDSHIP  0xFF
+#define DEFAULT_FRIENDSHIP 30
+#define ESTIMATED_FRIENDSHIP(lvl) (lvl >= 75 ? MAX_FRIENDSHIP : (DEFAULT_FRIENDSHIP + (lvl * 3)))
+#define FRIENDSHIP_LV(friendship) (friendship == MAX_FRIENDSHIP ? 2 : friendship/85)
+#define FRIENDSHIP_TO_EV_LIMIT(friendship) (friendship/20)
 
 #define STATUS_PRIMARY_NONE      0
 #define STATUS_PRIMARY_POISON    1
@@ -298,21 +302,27 @@
 
 // Evolution types
 #define EVO_MEGA_EVOLUTION   0xffff // Not an actual evolution, used to temporarily mega evolve in battle.
-#define EVO_FRIENDSHIP       1      // Pokémon levels up with friendship ≥ 220
-#define EVO_FRIENDSHIP_DAY   2      // Pokémon levels up during the day with friendship ≥ 220
-#define EVO_FRIENDSHIP_NIGHT 3      // Pokémon levels up at night with friendship ≥ 220
-#define EVO_LEVEL            4      // Pokémon reaches the specified level
-#define EVO_TRADE            5      // Pokémon is traded
-#define EVO_TRADE_ITEM       6      // Pokémon is traded while it's holding the specified item
-#define EVO_ITEM             7      // specified item is used on Pokémon
-#define EVO_LEVEL_ATK_GT_DEF 8      // Pokémon reaches the specified level with attack > defense
-#define EVO_LEVEL_ATK_EQ_DEF 9      // Pokémon reaches the specified level with attack = defense
-#define EVO_LEVEL_ATK_LT_DEF 10     // Pokémon reaches the specified level with attack < defense
-#define EVO_LEVEL_SILCOON    11     // Pokémon reaches the specified level with a Silcoon personality value
-#define EVO_LEVEL_CASCOON    12     // Pokémon reaches the specified level with a Cascoon personality value
-#define EVO_LEVEL_NINJASK    13     // Pokémon reaches the specified level (special value for Ninjask)
-#define EVO_LEVEL_SHEDINJA   14     // Pokémon reaches the specified level (special value for Shedinja)
-#define EVO_BEAUTY           15     // Pokémon levels up with beauty ≥ specified value
+#define EVO_BASIC            1      // Friendship reaches specified value
+#define EVO_DAY              2      // Friendship reaches specified value during the day
+#define EVO_NIGHT            3      // Friendship reaches specified value at night
+#define EVO_ITEM_HOLD        4      // Friendship reaches specified value with the specified(2) held item
+#define EVO_ITEM_HOLD_DAY    5      // Friendship reaches specified value with the specified(2) held item during the day
+#define EVO_ITEM_HOLD_NIGHT  6      // Friendship reaches specified value with the specified(2) held item at night
+#define EVO_ITEM             7      // Specified item is used on Pokémon
+#define EVO_ATK_GT_DEF       8      // Friendship reaches specified value with Pokémon attack > defense
+#define EVO_ATK_EQ_DEF       9      // Friendship reaches specified value with Pokémon attack = defense
+#define EVO_ATK_LT_DEF       10     // Friendship reaches specified value with Pokémon attack < defense
+#define EVO_NINJASK          11     // Friendship reaches specified value (special value for Ninjask)
+#define EVO_SHEDINJA         12     // Friendship reaches specified value (special value for Shedinja)
+#define EVO_CHAMPION         13     // Pokémon enters the Hall of Fame
+#define EVO_RAIN             14     // Friendship reaches specified value while its raining
+#define EVO_SPECIES_IN_PARTY 15     // Friendship reaches specified value with the specified(2) species in the party
+#define EVO_MALE             16     // Friendship reaches specified value (Pokémon is male)
+#define EVO_FEMALE           17     // Friendship reaches specified value (Pokémon is female)
+#define EVO_MOVE             18     // Pokémon learns the specified move
+#define EVO_MOVE_TYPE        19     // Pokémon learns a move of the specified type
+#define EVO_TYPE_IN_PARTY    20     // Friendship reaches specified value with a Pokémon of the specified(2) type in the party
+#define EVO_CONTEST          21     // Pokémon wins the Master rank contest of the specified category
 
 #define EVOS_PER_MON 5
 
