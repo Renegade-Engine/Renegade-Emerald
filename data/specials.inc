@@ -541,4 +541,3 @@ gSpecials:: @ 81DBA64
 	def_special CheckPartyHasMonWithCut
 	def_special CheckPartyHasMonWithStreght
 	def_special CheckPartyHasMonWithRockSmash
-	
