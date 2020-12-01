@@ -323,6 +323,7 @@
 #define EVO_MOVE_TYPE        19     // Pokémon learns a move of the specified type
 #define EVO_TYPE_IN_PARTY    20     // Friendship reaches specified value with a Pokémon of the specified(2) type in the party
 #define EVO_CONTEST          21     // Pokémon wins the Master rank contest of the specified category
+#define EVO_MAP              22     // Friendship reaches specified value at the specified location
 
 #define EVOS_PER_MON 5
 

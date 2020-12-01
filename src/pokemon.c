@@ -5132,6 +5132,10 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
                             }
                         }
                         break;
+                    case EVO_MAP:
+                        if (gMapHeader.regionMapSectionId == param1)
+                            return targetSpecies;
+                        break;
                 }
             }
             switch (gEvolutionTable[species][i].method)
