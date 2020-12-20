@@ -317,15 +317,16 @@
 #define EVO_CHAMPION         13     // Pokémon enters the Hall of Fame
 #define EVO_RAIN             14     // Friendship reaches specified value while its raining
 #define EVO_SPECIES_IN_PARTY 15     // Friendship reaches specified value with the specified(2) species in the party
-#define EVO_MALE             16     // Friendship reaches specified value (Pokémon is male)
-#define EVO_FEMALE           17     // Friendship reaches specified value (Pokémon is female)
-#define EVO_MOVE             18     // Pokémon learns the specified move
-#define EVO_MOVE_TYPE        19     // Pokémon learns a move of the specified type
-#define EVO_TYPE_IN_PARTY    20     // Friendship reaches specified value with a Pokémon of the specified(2) type in the party
-#define EVO_CONTEST          21     // Pokémon wins the Master rank contest of the specified category
-#define EVO_MAP              22     // Friendship reaches specified value at the specified location
+#define EVO_GENDER           16     // Friendship reaches specified value with specified gender
+#define EVO_GENDER_DAY       17     // Friendship reaches specified value during the day with specified gender
+#define EVO_GENDER_NIGHT     18     // Friendship reaches specified value at night with specified gender
+#define EVO_MOVE             19     // Pokémon learns the specified move
+#define EVO_MOVE_TYPE        20     // Pokémon learns a move of the specified type
+#define EVO_TYPE_IN_PARTY    21     // Friendship reaches specified value with a Pokémon of the specified(2) type in the party
+#define EVO_CONTEST          22     // Pokémon wins the Master rank contest of the specified category
+#define EVO_MAP              23     // Friendship reaches specified value at the specified location
 
-#define EVOS_PER_MON 5
+#define EVOS_PER_MON 8
 
 #define NUM_MALE_LINK_FACILITY_CLASSES   8
 #define NUM_FEMALE_LINK_FACILITY_CLASSES 8

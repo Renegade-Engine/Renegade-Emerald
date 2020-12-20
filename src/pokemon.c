@@ -5062,7 +5062,7 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
         for (i = 0; i < EVOS_PER_MON; i++)
         {
             targetSpecies = gEvolutionTable[species][i].targetSpecies;
-            if (friendship >= 70)
+            if (friendship >= param1)
             {
                 switch (gEvolutionTable[species][i].method)
                 {
@@ -5076,12 +5076,16 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
                         if (IsNightTime())
                             return targetSpecies;
                         break;
-                    case EVO_MALE:
-                        if (GetMonGender(mon) == MON_MALE)
+                    case EVO_GENDER:
+                        if (GetMonGender(mon) == param2)
                             return targetSpecies;
                         break;
-                    case EVO_FEMALE:
-                        if (GetMonGender(mon) == MON_FEMALE)
+                    case EVO_GENDER_DAY:
+                        if (GetMonGender(mon) == param2 && IsDayTime())
+                            return targetSpecies;
+                        break;
+                    case EVO_GENDER_NIGHT:
+                        if (GetMonGender(mon) == param2 && IsNightTime())
                             return targetSpecies;
                         break;
                     case EVO_ATK_GT_DEF:
