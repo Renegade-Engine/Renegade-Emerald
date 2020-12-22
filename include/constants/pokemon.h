@@ -228,6 +228,8 @@
 
 #define MAX_FRIENDSHIP  0xFF
 #define DEFAULT_FRIENDSHIP 30
+#define DEFAULT_FRIENDSHIP_LOW 15
+#define DEFAULT_FRIENDSHIP_MIN 0
 #define ESTIMATED_FRIENDSHIP(lvl) (lvl >= 75 ? MAX_FRIENDSHIP : (DEFAULT_FRIENDSHIP + (lvl * 3)))
 #define FRIENDSHIP_LV(friendship) (friendship == MAX_FRIENDSHIP ? 2 : friendship/85)
 #define FRIENDSHIP_TO_EV_LIMIT(friendship) (friendship/20)
