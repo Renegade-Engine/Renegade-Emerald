@@ -48,6 +48,7 @@
 #include "constants/items.h"
 #include "constants/layouts.h"
 #include "constants/moves.h"
+#include "constants/pokemon.h"
 #include "constants/songs.h"
 #include "constants/trainers.h"
 #include "constants/weather.h"
@@ -5037,13 +5038,13 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
     u16 heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, 0);
     u32 personality = GetMonData(mon, MON_DATA_PERSONALITY, 0);
     u8 level;
-    u16 friendship;
+    u8 friendship;
     u8 holdEffect;
     u16 param1;
     u16 param2;
+	u8 estimatedFriendship = 0;
 
-    param1 = gEvolutionTable[species][i].param;
-    param2 = gEvolutionTable[species][i].param2;
+    
 
     if (heldItem == ITEM_ENIGMA_BERRY)
         holdEffect = gSaveBlock1Ptr->enigmaBerry.holdEffect;
@@ -5057,12 +5058,16 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
     {
     case 0:
         level = GetMonData(mon, MON_DATA_LEVEL, 0);
-        friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, 0);
-
+        friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, 0);		
+		
         for (i = 0; i < EVOS_PER_MON; i++)
         {
+			param1 = gEvolutionTable[species][i].param;
+			param2 = gEvolutionTable[species][i].param2;
             targetSpecies = gEvolutionTable[species][i].targetSpecies;
-            if (friendship >= param1)
+			estimatedFriendship = ESTIMATED_FRIENDSHIP(param1);
+			
+            if (friendship >= estimatedFriendship)
             {
                 switch (gEvolutionTable[species][i].method)
                 {
@@ -5186,7 +5191,7 @@ u16 GetEvolutionTargetSpecies(struct Pokemon *mon, u8 type, u16 evolutionItem)
         {
             targetSpecies = gEvolutionTable[species][i].targetSpecies;
             if (gEvolutionTable[species][i].method == EVO_ITEM
-             && param1 == evolutionItem)
+             && gEvolutionTable[species][i].param == evolutionItem)
             {
                 return targetSpecies;
             }
