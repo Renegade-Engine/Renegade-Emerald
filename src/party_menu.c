@@ -1129,7 +1129,7 @@ static void DrawCancelConfirmButtons(void)
 
 bool8 IsMultiBattle(void)
 {
-    if (gBattleTypeFlags & BATTLE_TYPE_MULTI && gBattleTypeFlags & BATTLE_TYPE_DOUBLE && gBattleTypeFlags & BATTLE_TYPE_TRAINER && gMain.inBattle)
+    if (gBattleTypeFlags & BATTLE_TYPE_MULTI && gBattleTypeFlags & BATTLE_TYPE_DOUBLE && gMain.inBattle)
         return TRUE;
     else
         return FALSE;
@@ -2537,12 +2537,20 @@ static void SetPartyMonFieldSelectionActions(struct Pokemon *mons, u8 slotId)
     sPartyMenuInternal->numActions = 0;
     AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, MENU_SUMMARY);
 
+    for (j = 0; j < 8; j++)
+    {
+        if (FlagGet(sHMsToFlagTable[sHMs[j]]) && CanMonLearnTMHM(&mons[slotId], sHMs[j] - ITEM_TM01_FOCUS_PUNCH)) 
+        {
+            AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, sHMsToFieldMoveTable[j] + MENU_FIELD_MOVES);
+        }
+    }
+
     // Add field moves to action list
     for (i = 0; i < MAX_MON_MOVES; i++)
     {
-        for (j = 0; sFieldMoves[j] != FIELD_MOVE_TERMINATOR; j++)
+        for (j = 8; sFieldMoves[j] != FIELD_MOVE_TERMINATOR; j++)
         {
-            if (GetMonData(&mons[slotId], i + MON_DATA_MOVE1) == sFieldMoves[j])
+            if ((GetMonData(&mons[slotId], i + MON_DATA_MOVE1) == sFieldMoves[j])) // 7 = HM count
             {
                 AppendToList(sPartyMenuInternal->actions, &sPartyMenuInternal->numActions, j + MENU_FIELD_MOVES);
                 break;
@@ -4698,9 +4706,10 @@ static void Task_LearnedMove(u8 taskId)
 
     if (move[1] == 0)
     {
-        AdjustFriendship(mon, FRIENDSHIP_EVENT_LEARN_TMHM);
-        if (item < ITEM_HM01_CUT)
+        if (item < ITEM_HM01_CUT) {
             RemoveBagItem(item, 1);
+            AdjustFriendship(mon, FRIENDSHIP_EVENT_LEARN_TM);
+        }
     }
     GetMonNickname(mon, gStringVar1);
     StringCopy(gStringVar2, gMoveNames[move[0]]);

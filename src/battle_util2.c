@@ -13,8 +13,6 @@
 
 void AllocateBattleResources(void)
 {
-    gBattleResources = gBattleResources; // something dumb needed to match
-
     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
         InitTrainerHillBattleStruct();
 
@@ -91,7 +89,7 @@ void AdjustFriendshipOnBattleFaint(u8 battlerId)
 
     if (gBattleMons[opposingBattlerId].level > gBattleMons[battlerId].level)
     {
-        if (gBattleMons[opposingBattlerId].level - gBattleMons[battlerId].level > 29)
+        if (gBattleMons[opposingBattlerId].level - gBattleMons[battlerId].level > 5)
             AdjustFriendship(&gPlayerParty[gBattlerPartyIndexes[battlerId]], FRIENDSHIP_EVENT_FAINT_LARGE);
         else
             AdjustFriendship(&gPlayerParty[gBattlerPartyIndexes[battlerId]], FRIENDSHIP_EVENT_FAINT_SMALL);
