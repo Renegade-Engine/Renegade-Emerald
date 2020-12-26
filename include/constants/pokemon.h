@@ -21,7 +21,8 @@
 #define TYPE_ICE              15
 #define TYPE_DRAGON           16
 #define TYPE_DARK             17
-#define NUMBER_OF_MON_TYPES   18
+#define TYPE_FAIRY            18
+#define NUMBER_OF_MON_TYPES   19
 
 // Pokemon egg groups
 #define EGG_GROUP_NONE          0
@@ -181,6 +182,8 @@
 #define MON_DATA_SPEED2            86
 #define MON_DATA_SPATK2            87
 #define MON_DATA_SPDEF2            88
+#define MON_DATA_EV_BONUS_SUM      89
+#define MON_DATA_EV_BONUS_COUNT    90
 
 #define MIN_LEVEL 1
 #define MAX_LEVEL 100
@@ -215,13 +218,21 @@
 #define FRIENDSHIP_EVENT_VITAMIN          1 // unused, handled by PokemonUseItemEffects
 #define FRIENDSHIP_EVENT_BATTLE_ITEM      2 // unused, handled by PokemonUseItemEffects
 #define FRIENDSHIP_EVENT_LEAGUE_BATTLE    3
-#define FRIENDSHIP_EVENT_LEARN_TMHM       4
+#define FRIENDSHIP_EVENT_LEARN_TM         4
 #define FRIENDSHIP_EVENT_WALKING          5
 #define FRIENDSHIP_EVENT_FAINT_SMALL      6
 #define FRIENDSHIP_EVENT_FAINT_FIELD_PSN  7
-#define FRIENDSHIP_EVENT_FAINT_LARGE      8 // If opponent was >= 30 levels higher. See AdjustFriendshipOnBattleFaint
+#define FRIENDSHIP_EVENT_FAINT_LARGE      8 // If opponent was >= 6 levels higher. See AdjustFriendshipOnBattleFaint
+#define FRIENDSHIP_EVENT_TRAINER_BATTLE   9
+#define FRIENDSHIP_EVENT_LEAGUE_CHAMPION  10
 
 #define MAX_FRIENDSHIP  0xFF
+#define DEFAULT_FRIENDSHIP 30
+#define DEFAULT_FRIENDSHIP_LOW 15
+#define DEFAULT_FRIENDSHIP_MIN 0
+#define ESTIMATED_FRIENDSHIP(lvl) (lvl >= 75 ? MAX_FRIENDSHIP : (DEFAULT_FRIENDSHIP + (lvl * 3)))
+#define FRIENDSHIP_LV(friendship) (friendship == MAX_FRIENDSHIP ? 2 : friendship/85)
+#define FRIENDSHIP_TO_EV_LIMIT(friendship) (friendship/20)
 
 #define STATUS_PRIMARY_NONE      0
 #define STATUS_PRIMARY_POISON    1
@@ -245,6 +256,29 @@
 #define FLAG_SNATCH_AFFECTED        (1 << 3)
 #define FLAG_MIRROR_MOVE_AFFECTED   (1 << 4)
 #define FLAG_KINGSROCK_AFFECTED     (1 << 5)
+#define FLAG_HIGH_CRIT              (1 << 6)
+#define FLAG_RECKLESS_BOOST         (1 << 7)
+#define FLAG_IRON_FIST_BOOST        (1 << 8)
+#define FLAG_SHEER_FORCE_BOOST      (1 << 9)
+#define FLAG_STRONG_JAW_BOOST       (1 << 10)
+#define FLAG_MEGA_LAUNCHER_BOOST    (1 << 11)
+#define FLAG_STAT_STAGES_IGNORED    (1 << 12)
+#define FLAG_DMG_MINIMIZE           (1 << 13)
+#define FLAG_DMG_UNDERGROUND        (1 << 14)
+#define FLAG_DMG_UNDERWATER         (1 << 15)
+#define FLAG_SOUND                  (1 << 16)
+#define FLAG_BALLISTIC              (1 << 17)
+#define FLAG_PROTECTION_MOVE        (1 << 18)
+#define FLAG_POWDER                 (1 << 19)
+#define FLAG_TARGET_ABILITY_IGNORED (1 << 20)
+#define FLAG_DANCE                  (1 << 21)
+#define FLAG_DMG_IN_AIR             (1 << 22) // X2 dmg on air, always hits target on air
+#define FLAG_HIT_IN_AIR             (1 << 23) // dmg is normal, always hits target on air
+
+// Split defines.
+#define SPLIT_PHYSICAL  0x0
+#define SPLIT_SPECIAL   0x1
+#define SPLIT_STATUS    0x2
 
 // Growth rates
 #define GROWTH_MEDIUM_FAST  0
@@ -269,23 +303,34 @@
 #define F_SUMMARY_SCREEN_FLIP_SPRITE 0x80
 
 // Evolution types
-#define EVO_FRIENDSHIP       1  // Pokémon levels up with friendship ≥ 220
-#define EVO_FRIENDSHIP_DAY   2  // Pokémon levels up during the day with friendship ≥ 220
-#define EVO_FRIENDSHIP_NIGHT 3  // Pokémon levels up at night with friendship ≥ 220
-#define EVO_LEVEL            4  // Pokémon reaches the specified level
-#define EVO_TRADE            5  // Pokémon is traded
-#define EVO_TRADE_ITEM       6  // Pokémon is traded while it's holding the specified item
-#define EVO_ITEM             7  // specified item is used on Pokémon
-#define EVO_LEVEL_ATK_GT_DEF 8  // Pokémon reaches the specified level with attack > defense
-#define EVO_LEVEL_ATK_EQ_DEF 9  // Pokémon reaches the specified level with attack = defense
-#define EVO_LEVEL_ATK_LT_DEF 10 // Pokémon reaches the specified level with attack < defense
-#define EVO_LEVEL_SILCOON    11 // Pokémon reaches the specified level with a Silcoon personality value
-#define EVO_LEVEL_CASCOON    12 // Pokémon reaches the specified level with a Cascoon personality value
-#define EVO_LEVEL_NINJASK    13 // Pokémon reaches the specified level (special value for Ninjask)
-#define EVO_LEVEL_SHEDINJA   14 // Pokémon reaches the specified level (special value for Shedinja)
-#define EVO_BEAUTY           15 // Pokémon levels up with beauty ≥ specified value
+#define EVO_BASIC            1      // Friendship reaches specified value
+#define EVO_DAY              2      // Friendship reaches specified value during the day
+#define EVO_NIGHT            3      // Friendship reaches specified value at night
+#define EVO_ITEM_HOLD        4      // Friendship reaches specified value with the specified(2) held item
+#define EVO_ITEM_HOLD_DAY    5      // Friendship reaches specified value with the specified(2) held item during the day
+#define EVO_ITEM_HOLD_NIGHT  6      // Friendship reaches specified value with the specified(2) held item at night
+#define EVO_ITEM             7      // Specified item is used on Pokémon
+#define EVO_ATK_GT_DEF       8      // Friendship reaches specified value with Pokémon attack > defense
+#define EVO_ATK_EQ_DEF       9      // Friendship reaches specified value with Pokémon attack = defense
+#define EVO_ATK_LT_DEF       10     // Friendship reaches specified value with Pokémon attack < defense
+#define EVO_NINJASK          11     // Friendship reaches specified value (special value for Ninjask)
+#define EVO_SHEDINJA         12     // Friendship reaches specified value (special value for Shedinja)
+#define EVO_CHAMPION         13     // Pokémon enters the Hall of Fame
+#define EVO_RAIN             14     // Friendship reaches specified value while its raining
+#define EVO_SPECIES_IN_PARTY 15     // Friendship reaches specified value with the specified(2) species in the party
+#define EVO_GENDER           16     // Friendship reaches specified value with specified gender
+#define EVO_GENDER_DAY       17     // Friendship reaches specified value during the day with specified gender
+#define EVO_GENDER_NIGHT     18     // Friendship reaches specified value at night with specified gender
+#define EVO_MOVE             19     // Pokémon learns the specified move
+#define EVO_MOVE_TYPE        20     // Pokémon learns a move of the specified type
+#define EVO_TYPE_IN_PARTY    21     // Friendship reaches specified value with a Pokémon of the specified(2) type in the party
+#define EVO_CONTEST          22     // Pokémon wins the Master rank contest of the specified category
+#define EVO_MAP              23     // Friendship reaches specified value at the specified location
+#define EVO_MEGA_EVOLUTION      0xffff // Not an actual evolution, used to temporarily mega evolve in battle.
+#define EVO_MOVE_MEGA_EVOLUTION 0xfffe // Mega Evolution that checks for a move instead of held item.
 
-#define EVOS_PER_MON 5
+
+#define EVOS_PER_MON 8
 
 #define NUM_MALE_LINK_FACILITY_CLASSES   8
 #define NUM_FEMALE_LINK_FACILITY_CLASSES 8

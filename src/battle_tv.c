@@ -714,15 +714,16 @@ void BattleTv_SetDataBasedOnAnimation(u8 animationId)
 
 void TryPutLinkBattleTvShowOnAir(void)
 {
-    u16 playerBestSpecies = 0, opponentBestSpecies = 0, moveId = 0;
-    s16 sum = 0, playerBestSum = 0, opponentBestSum = SHRT_MAX;
+    u16 playerBestSpecies = 0, opponentBestSpecies = 0;
+    s16 playerBestSum = 0, opponentBestSum = SHRT_MAX;
     u8 playerBestMonId = 0, opponentBestMonId = 0;
     struct BattleTvMovePoints *movePoints = NULL;
     u8 countPlayer = 0, countOpponent = 0;
-    u16 species;
+    s16 sum = 0;
+    u16 species = 0;
+    u16 moveId = 0;
     s32 i, j;
-
-    int zero = 0, one = 1; // stupid variables needed to match. Feel free to get rid of them.
+    int zero = 0, one = 1; //needed for matching
 
     if (gBattleStruct->anyMonHasTransformed)
         return;
@@ -1099,20 +1100,9 @@ static void TrySetBattleSeminarShow(void)
         powerOverride = 0;
         if (ShouldCalculateDamage(gCurrentMove, &dmgByMove[i], &powerOverride))
         {
-            u8 moveResultFlags;
-            u16 sideStatus = gSideStatuses[GET_BATTLER_SIDE(gBattlerTarget)];
-            gBattleMoveDamage = CalculateBaseDamage(&gBattleMons[gBattlerAttacker], &gBattleMons[gBattlerTarget], gCurrentMove,
-                                                    sideStatus, powerOverride,
-                                                    0, gBattlerAttacker, gBattlerTarget);
-
-            if (gStatuses3[gBattlerAttacker] & STATUS3_CHARGED_UP && gBattleMoves[gCurrentMove].type == TYPE_ELECTRIC)
-                gBattleMoveDamage *= 2;
-            if (gProtectStructs[gBattlerAttacker].helpingHand)
-                gBattleMoveDamage = gBattleMoveDamage * 15 / 10;
-
-            moveResultFlags = TypeCalc(gCurrentMove, gBattlerAttacker, gBattlerTarget);
+            gBattleMoveDamage = CalculateMoveDamage(gCurrentMove, gBattlerAttacker, gBattlerTarget, gBattleMoves[gCurrentMove].type, powerOverride, FALSE, FALSE, FALSE);
             dmgByMove[i] = gBattleMoveDamage;
-            if (dmgByMove[i] == 0 && !(moveResultFlags & MOVE_RESULT_NO_EFFECT))
+            if (dmgByMove[i] == 0 && !(gMoveResultFlags & MOVE_RESULT_NO_EFFECT))
                 dmgByMove[i] = 1;
         }
     }

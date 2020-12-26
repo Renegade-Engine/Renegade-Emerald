@@ -249,7 +249,7 @@ void sub_81D1D04(u8 a0)
     sUnknown_0203CF48[a0] = 0xFF;
 }
 
-static u8 sub_81D1D34(u8 a0) // unused
+static u8 sub_81D1D34(u8 a0)
 {
     return sUnknown_0203CF48[a0];
 }
@@ -893,73 +893,76 @@ static u8 *GetConditionMenuMonString(u8 *dst, u16 boxId, u16 monId)
     {
         return StringCopyPadded(dst, gText_EggNickname, 0, 12);
     }
-    GetBoxOrPartyMonData(boxId, monId, MON_DATA_NICKNAME, dst);
-    StringGetEnd10(dst);
-    species = GetBoxOrPartyMonData(boxId, monId, MON_DATA_SPECIES, NULL);
-    if (boxId == TOTAL_BOXES_COUNT) // Party mon.
-    {
-        level = GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL);
-        gender = GetMonGender(&gPlayerParty[monId]);
-    }
     else
     {
-        // Needed to match, feel free to remove.
-        boxId++, boxId--;
-        monId++, monId--;
+        GetBoxOrPartyMonData(boxId, monId, MON_DATA_NICKNAME, dst);
+        StringGetEnd10(dst);
+        species = GetBoxOrPartyMonData(boxId, monId, MON_DATA_SPECIES, NULL);
+        if (boxId == TOTAL_BOXES_COUNT) // Party mon.
+        {
+            level = GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL);
+            gender = GetMonGender(&gPlayerParty[monId]);
+        }
+        else
+        {
+            // Needed to match, feel free to remove.
+            boxId++;boxId--;
+            monId++;monId--;
 
-        boxMon = GetBoxedMonPtr(boxId, monId);
-        gender = GetBoxMonGender(boxMon);
-        level = GetLevelFromBoxMonExp(boxMon);
-    }
+            boxMon = GetBoxedMonPtr(boxId, monId);
+            gender = GetBoxMonGender(boxMon);
+            level = GetLevelFromBoxMonExp(boxMon);
+        }
 
-    if ((species == SPECIES_NIDORAN_F || species == SPECIES_NIDORAN_M) && !StringCompare(dst, gSpeciesNames[species]))
-        gender = MON_GENDERLESS;
+        if ((species == SPECIES_NIDORAN_F || species == SPECIES_NIDORAN_M) && !StringCompare(dst, gSpeciesNames[species]))
+            gender = MON_GENDERLESS;
 
-    for (str = dst; *str != EOS; str++)
-        ;
+        for (str = dst; *str != EOS; str++)
+            ;
 
-    *(str++) = EXT_CTRL_CODE_BEGIN;
-    *(str++) = EXT_CTRL_CODE_SKIP;
-    *(str++) = 60;
+        *(str++) = EXT_CTRL_CODE_BEGIN;
+        *(str++) = EXT_CTRL_CODE_SKIP;
+        *(str++) = 60;
 
-    switch (gender)
-    {
-    default:
+        switch (gender)
+        {
+        default:
+            *(str++) = CHAR_SPACE;
+            break;
+        case MON_MALE:
+            *(str++) = EXT_CTRL_CODE_BEGIN;
+            *(str++) = EXT_CTRL_CODE_COLOR;
+            *(str++) = TEXT_COLOR_RED;
+            *(str++) = EXT_CTRL_CODE_BEGIN;
+            *(str++) = EXT_CTRL_CODE_SHADOW;
+            *(str++) = TEXT_COLOR_LIGHT_RED;
+            *(str++) = CHAR_MALE;
+            break;
+        case MON_FEMALE:
+            *(str++) = EXT_CTRL_CODE_BEGIN;
+            *(str++) = EXT_CTRL_CODE_COLOR;
+            *(str++) = TEXT_COLOR_GREEN;
+            *(str++) = EXT_CTRL_CODE_BEGIN;
+            *(str++) = EXT_CTRL_CODE_SHADOW;
+            *(str++) = TEXT_COLOR_LIGHT_GREEN;
+            *(str++) = CHAR_FEMALE;
+            break;
+        }
+
+        *(str++) = EXT_CTRL_CODE_BEGIN;
+        *(str++) = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
+        *(str++) = TEXT_COLOR_BLUE;
+        *(str++) = TEXT_COLOR_TRANSPARENT;
+        *(str++) = TEXT_COLOR_LIGHT_BLUE;
+        *(str++) = CHAR_SLASH;
+        *(str++) = CHAR_EXTRA_SYMBOL;
+        *(str++) = CHAR_LV_2;
+        str = ConvertIntToDecimalStringN(str, level, STR_CONV_MODE_LEFT_ALIGN, 3);
         *(str++) = CHAR_SPACE;
-        break;
-    case MON_MALE:
-        *(str++) = EXT_CTRL_CODE_BEGIN;
-        *(str++) = EXT_CTRL_CODE_COLOR;
-        *(str++) = TEXT_COLOR_RED;
-        *(str++) = EXT_CTRL_CODE_BEGIN;
-        *(str++) = EXT_CTRL_CODE_SHADOW;
-        *(str++) = TEXT_COLOR_LIGHT_RED;
-        *(str++) = CHAR_MALE;
-        break;
-    case MON_FEMALE:
-        *(str++) = EXT_CTRL_CODE_BEGIN;
-        *(str++) = EXT_CTRL_CODE_COLOR;
-        *(str++) = TEXT_COLOR_GREEN;
-        *(str++) = EXT_CTRL_CODE_BEGIN;
-        *(str++) = EXT_CTRL_CODE_SHADOW;
-        *(str++) = TEXT_COLOR_LIGHT_GREEN;
-        *(str++) = CHAR_FEMALE;
-        break;
+        *str = EOS;
+
+        return str;
     }
-
-    *(str++) = EXT_CTRL_CODE_BEGIN;
-    *(str++) = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
-    *(str++) = TEXT_COLOR_BLUE;
-    *(str++) = TEXT_COLOR_TRANSPARENT;
-    *(str++) = TEXT_COLOR_LIGHT_BLUE;
-    *(str++) = CHAR_SLASH;
-    *(str++) = CHAR_EXTRA_SYMBOL;
-    *(str++) = CHAR_LV_2;
-    str = ConvertIntToDecimalStringN(str, level, STR_CONV_MODE_LEFT_ALIGN, 3);
-    *(str++) = CHAR_SPACE;
-    *str = EOS;
-
-    return str;
 }
 
 // Buffers the string in src to dest up to n chars. If src is less than n chars, fill with spaces
@@ -1494,6 +1497,58 @@ static const u8 *const sLvlUpStatStrings[NUM_STATS] =
     gText_Speed
 };
 
+void DrawGiveEVsWindowPg1(u16 windowId, u8 cursorPos, u16 *currStats, u8 bgClr, u8 fgClr, u8 shadowClr)
+{
+    u16 i, numDigits, x;
+    s16 stats[NUM_STATS];
+    u8 text[12];
+    u8 color[3];
+
+    FillWindowPixelBuffer(windowId, PIXEL_FILL(bgClr));
+
+    stats[0] = currStats[STAT_HP];
+    stats[1] = currStats[STAT_ATK];
+    stats[2] = currStats[STAT_DEF];
+    stats[3] = currStats[STAT_SPATK];
+    stats[4] = currStats[STAT_SPDEF];
+    stats[5] = currStats[STAT_SPEED];
+
+    color[0] = bgClr;
+    color[1] = fgClr;
+    color[2] = shadowClr;
+
+    for (i = 0; i < NUM_STATS; i++)
+    {
+        if (cursorPos < NUM_STATS)
+            color[1] = (i == cursorPos) ? fgClr : shadowClr;
+        if (stats[i] > 99)
+            numDigits = 3;
+        else if (stats[i] > 9)
+            numDigits = 2;
+        else
+            numDigits = 1;
+
+        ConvertIntToDecimalStringN(text, stats[i], STR_CONV_MODE_LEFT_ALIGN, numDigits);
+        x = 6 * (4 - numDigits);
+
+        AddTextPrinterParameterized3(windowId,
+                                     1,
+                                     0,
+                                     15 * i,
+                                     color,
+                                     -1,
+                                     sLvlUpStatStrings[i]);
+
+        AddTextPrinterParameterized3(windowId,
+                                     1,
+                                     56 + x,
+                                     15 * i,
+                                     color,
+                                     -1,
+                                     text);
+    }
+}
+
 void DrawLevelUpWindowPg1(u16 windowId, u16 *statsBefore, u16 *statsAfter, u8 bgClr, u8 fgClr, u8 shadowClr)
 {
     u16 i, x;
@@ -1607,4 +1662,14 @@ void GetMonLevelUpWindowStats(struct Pokemon *mon, u16 *currStats)
     currStats[STAT_SPEED] = GetMonData(mon, MON_DATA_SPEED);
     currStats[STAT_SPATK] = GetMonData(mon, MON_DATA_SPATK);
     currStats[STAT_SPDEF] = GetMonData(mon, MON_DATA_SPDEF);
+}
+
+void GetMonEVsWindowStats(struct Pokemon *mon, u16 *currStats)
+{
+    currStats[STAT_HP]    = GetMonData(mon, MON_DATA_HP_EV);
+    currStats[STAT_ATK]   = GetMonData(mon, MON_DATA_ATK_EV);
+    currStats[STAT_DEF]   = GetMonData(mon, MON_DATA_DEF_EV);
+    currStats[STAT_SPEED] = GetMonData(mon, MON_DATA_SPEED_EV);
+    currStats[STAT_SPATK] = GetMonData(mon, MON_DATA_SPATK_EV);
+    currStats[STAT_SPDEF] = GetMonData(mon, MON_DATA_SPDEF_EV);
 }

@@ -2730,6 +2730,7 @@ static int SelectOpponentMonsFromParty(int *partyMovePoints, bool8 allowRandom)
 #define TYPE_x2     40
 #define TYPE_x4     80
 
+// arg2 is either 2, a personality, or an OTID
 static int GetTypeEffectivenessPoints(int move, int targetSpecies, int arg2)
 {
     int defType1, defType2, defAbility, moveType;
@@ -2751,25 +2752,15 @@ static int GetTypeEffectivenessPoints(int move, int targetSpecies, int arg2)
     }
     else
     {
-        while (TYPE_EFFECT_ATK_TYPE(i) != TYPE_ENDTABLE)
-        {
-            if (TYPE_EFFECT_ATK_TYPE(i) == TYPE_FORESIGHT)
-            {
-                i += 3;
-                continue;
-            }
-            if (TYPE_EFFECT_ATK_TYPE(i) == moveType)
-            {
-                // BUG: TYPE_x2 is not necessary and makes the condition always false if the ability is wonder guard.
-                if (TYPE_EFFECT_DEF_TYPE(i) == defType1)
-                    if ((defAbility == ABILITY_WONDER_GUARD && TYPE_EFFECT_MULTIPLIER(i) == TYPE_x2) || defAbility != ABILITY_WONDER_GUARD)
-                        typePower = typePower * TYPE_EFFECT_MULTIPLIER(i) / 10;
-                if (TYPE_EFFECT_DEF_TYPE(i) == defType2 && defType1 != defType2)
-                    if ((defAbility == ABILITY_WONDER_GUARD && TYPE_EFFECT_MULTIPLIER(i) == TYPE_x2) || defAbility != ABILITY_WONDER_GUARD)
-                        typePower = typePower * TYPE_EFFECT_MULTIPLIER(i) / 10;
-            }
-            i += 3;
-        }
+        u32 typeEffectiveness1 = UQ_4_12_TO_INT(GetTypeModifier(moveType, defType1) * 2) * 5;
+        u32 typeEffectiveness2 = UQ_4_12_TO_INT(GetTypeModifier(moveType, defType2) * 2) * 5;
+
+        typePower = (typeEffectiveness1 * typePower) / 10;
+        if (defType2 != defType1)
+            typePower = (typeEffectiveness2 * typePower) / 10;
+
+        if (defAbility == ABILITY_WONDER_GUARD && typeEffectiveness1 != 20 && typeEffectiveness2 != 20)
+            typePower = 0;
     }
 
     switch (arg2)
@@ -2777,10 +2768,10 @@ static int GetTypeEffectivenessPoints(int move, int targetSpecies, int arg2)
     case 0:
         switch (typePower)
         {
-        default:
-        case TYPE_x0:
-        case TYPE_x0_25:
         case TYPE_x0_50:
+        case TYPE_x0_25:
+        case TYPE_x0:
+        default:
             typePower = 0;
             break;
         case TYPE_x1:
@@ -2797,18 +2788,18 @@ static int GetTypeEffectivenessPoints(int move, int targetSpecies, int arg2)
     case 1:
         switch (typePower)
         {
-        case TYPE_x0:
-            typePower = 8;
+        default:
+        case TYPE_x1:
+            typePower = 0;
             break;
         case TYPE_x0_25:
             typePower = 4;
             break;
+        case TYPE_x0:
+            typePower = 8;
+            break;
         case TYPE_x0_50:
             typePower = 2;
-            break;
-        default:
-        case TYPE_x1:
-            typePower = 0;
             break;
         case TYPE_x2:
             typePower = -2;
@@ -2827,8 +2818,8 @@ static int GetTypeEffectivenessPoints(int move, int targetSpecies, int arg2)
         case TYPE_x0_25:
             typePower = -8;
             break;
-        default:
         case TYPE_x0_50:
+        default:
             typePower = 0;
             break;
         case TYPE_x1:
@@ -4304,7 +4295,7 @@ static void DisplayTrainerInfoOnCard(u8 flags, u8 trainerTourneyId)
     textPrinter.currentY = textPrinter.y;
     textPrinter.letterSpacing = 2;
     textPrinter.lineSpacing = 0;
-    textPrinter.style = 0;
+    textPrinter.unk = 0;
     textPrinter.fgColor = TEXT_DYNAMIC_COLOR_5;
     textPrinter.bgColor = TEXT_COLOR_TRANSPARENT;
     textPrinter.shadowColor = TEXT_DYNAMIC_COLOR_4;
@@ -4533,7 +4524,6 @@ static void DisplayTrainerInfoOnCard(u8 flags, u8 trainerTourneyId)
             // If 2 good stats have been found already, choose which to use
             if (i == 2)
             {
-
                 if (allocatedArray[6] < allocatedArray[k])
                 {
                     if (allocatedArray[7] < allocatedArray[k])
@@ -4837,7 +4827,7 @@ static void DisplayMatchInfoOnCard(u8 flags, u8 matchNo)
     textPrinter.currentY = textPrinter.y;
     textPrinter.letterSpacing = 0;
     textPrinter.lineSpacing = 0;
-    textPrinter.style = 0;
+    textPrinter.unk = 0;
     textPrinter.fgColor = TEXT_DYNAMIC_COLOR_5;
     textPrinter.bgColor = TEXT_COLOR_TRANSPARENT;
     textPrinter.shadowColor = TEXT_DYNAMIC_COLOR_4;
@@ -5164,28 +5154,28 @@ static u16 GetWinningMove(int winnerTournamentId, int loserTournamentId, u8 roun
 
             for (k = 0; k < FRONTIER_PARTY_SIZE; k++)
             {
-                u32 var = 0;
-                u16 targetSpecies = SPECIES_NONE;
-                u16 targetAbility = ABILITY_NONE;
+                u32 personality = 0;
+                u32 targetSpecies = 0;
+                u32 targetAbility = 0;
+                u32 typeMultiplier = 0;
                 do
                 {
-                    var = Random32();
-                } while (gFacilityTrainerMons[DOME_MONS[loserTournamentId][k]].nature != GetNatureFromPersonality(var));
+                    personality = Random32();
+                } while (gFacilityTrainerMons[DOME_MONS[loserTournamentId][k]].nature != GetNatureFromPersonality(personality));
 
                 targetSpecies = gFacilityTrainerMons[DOME_MONS[loserTournamentId][k]].species;
-                if (var & 1)
+
+                if (personality & 1)
                     targetAbility = gBaseStats[targetSpecies].abilities[1];
                 else
                     targetAbility = gBaseStats[targetSpecies].abilities[0];
 
-                var = AI_TypeCalc(moveIds[i * MAX_MON_MOVES + j], targetSpecies, targetAbility);
-                if (var & MOVE_RESULT_NOT_VERY_EFFECTIVE && var & MOVE_RESULT_SUPER_EFFECTIVE)
-                    moveScores[i * MAX_MON_MOVES + j] += movePower;
-                else if (var & MOVE_RESULT_NO_EFFECT)
+                typeMultiplier = CalcPartyMonTypeEffectivenessMultiplier(moveIds[i * 4 + j], targetSpecies, targetAbility);
+                if (typeMultiplier == UQ_4_12(0))
                     moveScores[i * MAX_MON_MOVES + j] += 0;
-                else if (var & MOVE_RESULT_SUPER_EFFECTIVE)
+                else if (typeMultiplier >= UQ_4_12(2))
                     moveScores[i * MAX_MON_MOVES + j] += movePower * 2;
-                else if (var & MOVE_RESULT_NOT_VERY_EFFECTIVE)
+                else if (typeMultiplier <= UQ_4_12(0.5))
                     moveScores[i * MAX_MON_MOVES + j] += movePower / 2;
                 else
                     moveScores[i * MAX_MON_MOVES + j] += movePower;
@@ -5335,7 +5325,7 @@ static void Task_ShowTourneyTree(u8 taskId)
         textPrinter.lineSpacing = 0;
         textPrinter.currentX = GetStringCenterAlignXOffsetWithLetterSpacing(textPrinter.fontId, textPrinter.currentChar, 0x70, textPrinter.letterSpacing);
         textPrinter.currentY = 1;
-        textPrinter.style = 0;
+        textPrinter.unk = 0;
         textPrinter.fgColor = TEXT_DYNAMIC_COLOR_5;
         textPrinter.bgColor = TEXT_COLOR_TRANSPARENT;
         textPrinter.shadowColor = TEXT_DYNAMIC_COLOR_4;
@@ -5516,7 +5506,7 @@ static void Task_HandleStaticTourneyTreeInput(u8 taskId)
             textPrinter.y = 0;
             textPrinter.letterSpacing = 2;
             textPrinter.lineSpacing = 0;
-            textPrinter.style = 0;
+            textPrinter.unk = 0;
             textPrinter.fgColor = TEXT_DYNAMIC_COLOR_2;
             textPrinter.bgColor = TEXT_COLOR_TRANSPARENT;
             textPrinter.shadowColor = TEXT_DYNAMIC_COLOR_4;
