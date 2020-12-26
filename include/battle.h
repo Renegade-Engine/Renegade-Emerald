@@ -491,7 +491,6 @@ struct BattleStruct
     u8 arenaTurnCounter;
     u8 turnSideTracker;
     u8 givenExpMons; // Bits for enemy party's pokemon that gave exp to player's party.
-    u8 gainedExpMons; //Bits for player party's pokemon that gained exp in battle.
     u16 lastTakenMoveFrom[MAX_BATTLERS_COUNT][MAX_BATTLERS_COUNT]; // a 2-D array [target][attacker]
     u16 castformPalette[MAX_BATTLERS_COUNT][16];
     u8 field_180; // weird field, used in battle_main.c, once accessed as an array of u32 overwriting the field below
@@ -604,13 +603,13 @@ struct BattleScripting
     u8 windowsType; // 0 - normal, 1 - battle arena
     u8 multiplayerId;
     u8 specialTrainerBattleType;
-    u8 giveEVsCursorPos;
     bool8 monCaught;
     s32 savedDmg;
     u16 savedMoveEffect; // For moves hitting multiple targets.
     u16 moveEffect;
     u16 multihitMoveEffect;
     u8 illusionNickHack; // To properly display nick in STRINGID_ENEMYABOUTTOSWITCHPKMN.
+    u8 giveEVsCursorPos;
 };
 
 // rom_80A5C6C
@@ -821,7 +820,7 @@ extern u16 gPartnerSpriteId;
 extern void (*gPreBattleCallback1)(void);
 extern void (*gBattleMainFunc)(void);
 extern struct BattleResults gBattleResults;
-extern u8 gLeveledUpInBattle;
+extern u8 gGainedExpInBattle;
 extern void (*gBattlerControllerFuncs[MAX_BATTLERS_COUNT])(void);
 extern u8 gHealthboxSpriteIds[MAX_BATTLERS_COUNT];
 extern u8 gMultiUsePlayerCursor;
