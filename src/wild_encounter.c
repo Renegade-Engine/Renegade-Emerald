@@ -18,6 +18,7 @@
 #include "battle_pike.h"
 #include "battle_pyramid.h"
 #include "day_and_night.h"
+#include "global.h"
 #include "constants/abilities.h"
 #include "constants/battle_config.h"
 #include "constants/game_stat.h"
@@ -246,16 +247,16 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon)
     }
     for (i = 0; i < gPlayerPartyCount; i++)
     {
-        if (!GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG)
-            && GetMonData(&gPlayerParty[i], MON_DATA_LEVEL) < max)
-            max = GetMonData(&gPlayerParty[i], MON_DATA_LEVEL);
-
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG)) 
+        {
+            max = min(GetMonData(&gPlayerParty[i], MON_DATA_LEVEL), max);
+        }
     }
+    max = max(max, 3);
     if (max < min) {
-        min = max - 3;
-        if (min <= 0) min = 1;
+        min = max - 1;
     }
-    range = max - min + 1;
+    range = max - min > 5 ? 5 : (max - min + 1);
     rand = Random() % range;
 
     // check ability for max level mon
@@ -272,7 +273,7 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon)
         }
     }
 
-    return min + rand;
+    return max - rand;
 }
 
 static u16 GetCurrentMapWildMonHeaderId(void)
