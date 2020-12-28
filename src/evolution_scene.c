@@ -543,7 +543,7 @@ static void CB2_TradeEvolutionSceneUpdate(void)
 static void CreateShedinja(u16 preEvoSpecies, struct Pokemon* mon)
 {
     u32 data = 0;
-    if (gEvolutionTable[preEvoSpecies][0].method == EVO_LEVEL_NINJASK && gPlayerPartyCount < 6)
+    if (gEvolutionTable[preEvoSpecies][0].method == EVO_NINJASK && gPlayerPartyCount < 6)
     {
         s32 i;
         struct Pokemon* shedinja = &gPlayerParty[gPlayerPartyCount];
