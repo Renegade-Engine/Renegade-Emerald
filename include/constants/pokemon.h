@@ -303,7 +303,6 @@
 #define F_SUMMARY_SCREEN_FLIP_SPRITE 0x80
 
 // Evolution types
-#define EVO_MEGA_EVOLUTION   0xffff // Not an actual evolution, used to temporarily mega evolve in battle.
 #define EVO_BASIC            1      // Friendship reaches specified value
 #define EVO_DAY              2      // Friendship reaches specified value during the day
 #define EVO_NIGHT            3      // Friendship reaches specified value at night
@@ -327,6 +326,9 @@
 #define EVO_TYPE_IN_PARTY    21     // Friendship reaches specified value with a Pokémon of the specified(2) type in the party
 #define EVO_CONTEST          22     // Pokémon wins the Master rank contest of the specified category
 #define EVO_MAP              23     // Friendship reaches specified value at the specified location
+#define EVO_MEGA_EVOLUTION      0xffff // Not an actual evolution, used to temporarily mega evolve in battle.
+#define EVO_MOVE_MEGA_EVOLUTION 0xfffe // Mega Evolution that checks for a move instead of held item.
+
 
 #define EVOS_PER_MON 8
 

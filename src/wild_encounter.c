@@ -18,6 +18,7 @@
 #include "battle_pike.h"
 #include "battle_pyramid.h"
 #include "day_and_night.h"
+#include "global.h"
 #include "constants/abilities.h"
 #include "constants/battle_config.h"
 #include "constants/game_stat.h"
@@ -36,7 +37,7 @@ static void FeebasSeedRng(u16 seed);
 static bool8 IsWildLevelAllowedByRepel(u8 level);
 static void ApplyFluteEncounterRateMod(u32 *encRate);
 static void ApplyCleanseTagEncounterRateMod(u32 *encRate);
-static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 type, u8 ability, u8 *monIndex);
+static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 type, u16 ability, u8 *monIndex);
 static bool8 IsAbilityAllowingEncounter(u8 level);
 
 // EWRAM vars
@@ -246,22 +247,22 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon)
     }
     for (i = 0; i < gPlayerPartyCount; i++)
     {
-        if (!GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG)
-            && GetMonData(&gPlayerParty[i], MON_DATA_LEVEL) < max)
-            max = GetMonData(&gPlayerParty[i], MON_DATA_LEVEL);
-
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG)) 
+        {
+            max = min(GetMonData(&gPlayerParty[i], MON_DATA_LEVEL), max);
+        }
     }
+    max = max(max, 3);
     if (max < min) {
-        min = max - 3;
-        if (min <= 0) min = 1;
+        min = max - 1;
     }
-    range = max - min + 1;
+    range = max - min > 5 ? 5 : (max - min + 1);
     rand = Random() % range;
 
     // check ability for max level mon
     if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
     {
-        u8 ability = GetMonAbility(&gPlayerParty[0]);
+        u16 ability = GetMonAbility(&gPlayerParty[0]);
         if (ability == ABILITY_HUSTLE || ability == ABILITY_VITAL_SPIRIT || ability == ABILITY_PRESSURE)
         {
             if (Random() % 2 == 0)
@@ -272,7 +273,7 @@ static u8 ChooseWildMonLevel(const struct WildPokemon *wildPokemon)
         }
     }
 
-    return min + rand;
+    return max - rand;
 }
 
 static u16 GetCurrentMapWildMonHeaderId(void)
@@ -919,7 +920,7 @@ static bool8 IsWildLevelAllowedByRepel(u8 wildLevel)
 
 static bool8 IsAbilityAllowingEncounter(u8 level)
 {
-    u8 ability;
+    u16 ability;
 
     if (GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
         return TRUE;
@@ -956,7 +957,7 @@ static bool8 TryGetRandomWildMonIndexByType(const struct WildPokemon *wildMon, u
     return TRUE;
 }
 
-static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 type, u8 ability, u8 *monIndex)
+static bool8 TryGetAbilityInfluencedWildMonIndex(const struct WildPokemon *wildMon, u8 type, u16 ability, u8 *monIndex)
 {
     if (GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
         return FALSE;
