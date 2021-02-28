@@ -636,8 +636,12 @@ static void PlayerNotOnBikeMoving(u8 direction, u16 heldKeys)
 
     if (gPlayerAvatar.flags & PLAYER_AVATAR_FLAG_SURFING)
     {
-    // speed 2 is fast, same speed as running
-        PlayerGoSpeed2(direction);
+        if (heldKeys & B_BUTTON)
+            // speed 2 is same as mach bike
+            PlayerGoSpeed4(direction);
+        else
+            // speed 2 is fast, same speed as running
+            PlayerGoSpeed2(direction);
         return;
     }
 
@@ -1290,12 +1294,60 @@ bool8 PartyHasMonWithSurf(void)
         {
             if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) == SPECIES_NONE)
                 break;
-            if (MonKnowsMove(&gPlayerParty[i], MOVE_SURF))
+            if (CanMonLearnTMHM(&gPlayerParty[i], ITEM_HM03_SURF - ITEM_TM01_FOCUS_PUNCH)) 
                 return TRUE;
         }
     }
     return FALSE;
 }
+
+void CheckPlayerHasMonWithHM(u16 hm) 
+{
+    u8 i;
+
+    gSpecialVar_Result = PARTY_SIZE;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        u16 species = GetMonData(&gPlayerParty[i], MON_DATA_SPECIES, NULL);
+        if (!species)
+            break;
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG) && CanMonLearnTMHM(&gPlayerParty[i], hm - ITEM_TM01_FOCUS_PUNCH))
+        {
+            gSpecialVar_Result = i;
+            gSpecialVar_0x8004 = species;
+            break;
+        }
+    }
+}
+
+void CheckPartyHasMonWithSurf() 
+{
+    CheckPlayerHasMonWithHM(ITEM_HM03_SURF);
+}
+
+void CheckPartyHasMonWithDive() 
+{
+    CheckPlayerHasMonWithHM(ITEM_HM08_DIVE);
+}
+
+void CheckPartyHasMonWithWaterfall(void)
+{
+    CheckPlayerHasMonWithHM(ITEM_HM07_WATERFALL);
+}
+
+void CheckPartyHasMonWithCut(void)
+{
+    CheckPlayerHasMonWithHM(ITEM_HM01_CUT);
+}
+void CheckPartyHasMonWithStreght(void)
+{
+    CheckPlayerHasMonWithHM(ITEM_HM04_STRENGTH);
+}
+void CheckPartyHasMonWithRockSmash(void)
+{
+    CheckPlayerHasMonWithHM(ITEM_HM06_ROCK_SMASH);
+}
+
 
 bool8 IsPlayerSurfingNorth(void)
 {
@@ -1833,7 +1885,7 @@ static bool8 Fishing_CheckForBite(struct Task *task)
     {
         if (!GetMonData(&gPlayerParty[0], MON_DATA_SANITY_IS_EGG))
         {
-            u8 ability = GetMonAbility(&gPlayerParty[0]);
+            u16 ability = GetMonAbility(&gPlayerParty[0]);
             if (ability == ABILITY_SUCTION_CUPS || ability  == ABILITY_STICKY_HOLD)
             {
                 if (Random() % 100 > 14)

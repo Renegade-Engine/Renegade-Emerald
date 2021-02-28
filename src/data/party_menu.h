@@ -838,6 +838,36 @@ static const u16 sFieldMoves[] =
     MOVE_DIG, MOVE_SECRET_POWER, MOVE_MILK_DRINK, MOVE_SOFT_BOILED, MOVE_SWEET_SCENT, FIELD_MOVE_TERMINATOR
 };
 
+static const u8 sHMsToFieldMoveTable[] =
+{
+    [0] = 0,
+    [1] = 5,
+    [2] = 4,
+    [3] = 3,
+    [4] = 1,
+    [5] = 2,
+    [6] = 7,
+    [7] = 6,
+};
+
+static const u16 sHMsToFlagTable[] =
+{
+    [ITEM_HM01] = FLAG_RECEIVED_HM01,
+    [ITEM_HM02] = FLAG_RECEIVED_HM02,
+    [ITEM_HM03] = FLAG_RECEIVED_HM03,
+    [ITEM_HM04] = FLAG_RECEIVED_HM04,
+    [ITEM_HM05] = FLAG_RECEIVED_HM05,
+    [ITEM_HM06] = FLAG_RECEIVED_HM06,
+    [ITEM_HM07] = FLAG_RECEIVED_HM07,
+    [ITEM_HM08] = FLAG_RECEIVED_HM08,
+};
+
+static const u16 sHMs[] = 
+{
+    ITEM_HM01_CUT, ITEM_HM02_FLY, ITEM_HM03_SURF, ITEM_HM04_STRENGTH, ITEM_HM05_FLASH, 
+    ITEM_HM06_ROCK_SMASH, ITEM_HM07_WATERFALL, ITEM_HM08_DIVE
+};
+
 struct
 {
     bool8 (*fieldMoveFunc)(void);

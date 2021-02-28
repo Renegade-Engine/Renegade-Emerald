@@ -905,16 +905,7 @@ static bool8 TryProduceOrHatchEgg(struct DayCare *daycare)
                 continue;
 
             eggCycles = GetMonData(&gPlayerParty[i], MON_DATA_FRIENDSHIP);
-            if (eggCycles != 0)
-            {
-                if (eggCycles >= toSub)
-                    eggCycles -= toSub;
-                else
-                    eggCycles -= 1;
-
-                SetMonData(&gPlayerParty[i], MON_DATA_FRIENDSHIP, &eggCycles);
-            }
-            else 
+            if (eggCycles == 0)
             {
                 gSpecialVar_0x8004 = i;
                 return TRUE;
@@ -1185,7 +1176,7 @@ static void DaycareAddTextPrinter(u8 windowId, const u8 *text, u32 x, u32 y)
     printer.y = y;
     printer.currentX = x;
     printer.currentY = y;
-    printer.style = 0;
+    printer.unk = 0;
     gTextFlags.useAlternateDownArrow = 0;
     printer.letterSpacing = 0;
     printer.lineSpacing = 1;
@@ -1293,4 +1284,45 @@ void ChooseSendDaycareMon(void)
 {
     ChooseMonForDaycare();
     gMain.savedCallback = CB2_ReturnToField;
+}
+
+void UpdateEggCycles(u8 mod)
+{
+    u8 i;
+    u8 multiplier;
+    u8 eggCycles;
+
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+            continue;
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_BAD_EGG))
+            continue;
+        switch (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES2, 0))
+        {
+            case SPECIES_CHANSEY:
+                multiplier = max(multiplier, 2);
+                break;
+            case SPECIES_BLISSEY:
+                multiplier = max(multiplier, 3);
+                break;
+        }
+    }
+    mod *= multiplier;
+    for (i = 0; i < PARTY_SIZE; i++)
+    {
+        if (!GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
+            continue;
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_BAD_EGG))
+            continue;
+        eggCycles = GetMonData(&gPlayerParty[i], MON_DATA_FRIENDSHIP, 0);
+        if (eggCycles != 0)
+        {
+            if (mod >= eggCycles)
+                eggCycles = 0;
+            else
+                eggCycles = eggCycles - mod;
+            SetMonData(&gPlayerParty[i], MON_DATA_FRIENDSHIP, &eggCycles);
+        }
+    }
 }

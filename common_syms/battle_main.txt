@@ -1,7 +1,7 @@
 gPreBattleCallback1
 gBattleMainFunc
 gBattleResults
-gLeveledUpInBattle
+gGainedExpInBattle
 gBattlerControllerFuncs
 gHealthboxSpriteIds
 gMultiUsePlayerCursor

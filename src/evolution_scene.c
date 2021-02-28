@@ -543,7 +543,7 @@ static void CB2_TradeEvolutionSceneUpdate(void)
 static void CreateShedinja(u16 preEvoSpecies, struct Pokemon* mon)
 {
     u32 data = 0;
-    if (gEvolutionTable[preEvoSpecies][0].method == EVO_LEVEL_NINJASK && gPlayerPartyCount < 6)
+    if (gEvolutionTable[preEvoSpecies][0].method == EVO_NINJASK && gPlayerPartyCount < 6)
     {
         s32 i;
         struct Pokemon* shedinja = &gPlayerParty[gPlayerPartyCount];
@@ -725,7 +725,7 @@ static void Task_EvolutionScene(u8 taskID)
     case 15: // check if it wants to learn a new move
         if (!IsTextPrinterActive(0))
         {
-            var = MonTryLearningNewMove(mon, gTasks[taskID].tLearnsFirstMove);
+            var = MonTryLearningNewMoveEvolution(mon, gTasks[taskID].tLearnsFirstMove);
             if (var != 0 && !gTasks[taskID].tEvoWasStopped)
             {
                 u8 text[20];
@@ -1088,7 +1088,7 @@ static void Task_TradeEvolutionScene(u8 taskID)
     case 13:
         if (!IsTextPrinterActive(0) && IsFanfareTaskInactive() == TRUE)
         {
-            var = MonTryLearningNewMove(mon, gTasks[taskID].tLearnsFirstMove);
+            var = MonTryLearningNewMoveEvolution(mon, gTasks[taskID].tLearnsFirstMove);
             if (var != 0 && !gTasks[taskID].tEvoWasStopped)
             {
                 u8 text[20];

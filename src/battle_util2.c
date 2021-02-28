@@ -45,7 +45,8 @@ void FreeBattleResources(void)
 {
     if (gBattleTypeFlags & BATTLE_TYPE_TRAINER_HILL)
         FreeTrainerHillBattleStruct();
-
+    
+    gFieldStatuses = 0;
     if (gBattleResources != NULL)
     {
         FREE_AND_SET_NULL(gBattleStruct);
@@ -89,7 +90,7 @@ void AdjustFriendshipOnBattleFaint(u8 battlerId)
 
     if (gBattleMons[opposingBattlerId].level > gBattleMons[battlerId].level)
     {
-        if (gBattleMons[opposingBattlerId].level - gBattleMons[battlerId].level > 29)
+        if (gBattleMons[opposingBattlerId].level - gBattleMons[battlerId].level > 5)
             AdjustFriendship(&gPlayerParty[gBattlerPartyIndexes[battlerId]], FRIENDSHIP_EVENT_FAINT_LARGE);
         else
             AdjustFriendship(&gPlayerParty[gBattlerPartyIndexes[battlerId]], FRIENDSHIP_EVENT_FAINT_SMALL);
