@@ -3890,17 +3890,21 @@ static void Cmd_getexp(void)
     }
 }
 
-static bool32 NoAliveMonsForPlayer(void)
+static u8 GetPlayerAliveMonsCount(void)
 {
-    u32 i;
-    u32 HP_count = 0;
+    u8 count = 0;
+    u8 i;
 
     if (gBattleTypeFlags & BATTLE_TYPE_INGAME_PARTNER && (gPartnerTrainerId == TRAINER_STEVEN_PARTNER || gPartnerTrainerId >= TRAINER_CUSTOM_PARTNER))
     {
         for (i = 0; i < MULTI_PARTY_SIZE; i++)
         {
-            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG))
-                HP_count += GetMonData(&gPlayerParty[i], MON_DATA_HP);
+            if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) 
+            && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
+            && GetMonData(&gPlayerParty[i], MON_DATA_HP) > 0)
+            {
+                count++;
+            }                    
         }
     }
     else
@@ -3908,47 +3912,52 @@ static bool32 NoAliveMonsForPlayer(void)
         for (i = 0; i < PARTY_SIZE; i++)
         {
             if (GetMonData(&gPlayerParty[i], MON_DATA_SPECIES) && !GetMonData(&gPlayerParty[i], MON_DATA_IS_EGG)
-             && (!(gBattleTypeFlags & BATTLE_TYPE_ARENA) || !(gBattleStruct->arenaLostPlayerMons & gBitTable[i])))
+             && (!(gBattleTypeFlags & BATTLE_TYPE_ARENA) || !(gBattleStruct->arenaLostPlayerMons & gBitTable[i]))
+             && GetMonData(&gPlayerParty[i], MON_DATA_HP) > 0)
             {
-                HP_count += GetMonData(&gPlayerParty[i], MON_DATA_HP);
+                count++;
             }
         }
     }
-
-    return (HP_count == 0);
+    return count;
 }
 
-static bool32 NoAliveMonsForOpponent(void)
+static u8 GetOpponentAliveMonsCount(void)
 {
-    u32 i;
-    u32 HP_count = 0;
+    u8 count = 0;
+    u8 i;
 
     for (i = 0; i < PARTY_SIZE; i++)
     {
         if (GetMonData(&gEnemyParty[i], MON_DATA_SPECIES) && !GetMonData(&gEnemyParty[i], MON_DATA_IS_EGG)
-            && (!(gBattleTypeFlags & BATTLE_TYPE_ARENA) || !(gBattleStruct->arenaLostOpponentMons & gBitTable[i])))
+            && (!(gBattleTypeFlags & BATTLE_TYPE_ARENA) || !(gBattleStruct->arenaLostOpponentMons & gBitTable[i]))
+            && GetMonData(&gEnemyParty[i], MON_DATA_HP) > 0)
         {
-            HP_count += GetMonData(&gEnemyParty[i], MON_DATA_HP);
+            count++;
         }
     }
-
-    return (HP_count == 0);
+    return count;
 }
 
 bool32 NoAliveMonsForEitherParty(void)
 {
-    return (NoAliveMonsForPlayer() || NoAliveMonsForOpponent());
+    return (GetPlayerAliveMonsCount() == 0) || (GetOpponentAliveMonsCount() == 0);
 }
 
 static void atk24(void)
 {
+    u8 playerMons = GetPlayerAliveMonsCount();
+    u8 opponentMons = GetOpponentAliveMonsCount();
+
     if (gBattleControllerExecFlags)
         return;
 
-    if (NoAliveMonsForPlayer())
+    if (playerMons == 0)
         gBattleOutcome |= B_OUTCOME_LOST;
-    if (NoAliveMonsForOpponent())
+    if (opponentMons == 0)
         gBattleOutcome |= B_OUTCOME_WON;
+    if (gBattleOutcome != 0 && playerMons <= 1 && opponentMons <= 1)
+        gBattleOutcome |= B_OUTCOME_DREW;
 
     if (gBattleOutcome == 0 && (gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_x2000000)))
     {
