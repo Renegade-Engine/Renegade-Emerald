@@ -2156,7 +2156,7 @@ static void Cb2_EnterPSS(u8 boxOption)
 {
     ResetTasks();
     sCurrentBoxOption = boxOption;
-    sPSSData = Alloc(sizeof(struct PokemonStorageSystemData));
+    sPSSData = Alloc(sizeof(*sPSSData));
     if (sPSSData == NULL)
     {
         SetMainCallback2(Cb2_ExitPSS);
@@ -2176,7 +2176,7 @@ static void Cb2_EnterPSS(u8 boxOption)
 static void Cb2_ReturnToPSS(void)
 {
     ResetTasks();
-    sPSSData = Alloc(sizeof(struct PokemonStorageSystemData));
+    sPSSData = Alloc(sizeof(*sPSSData));
     if (sPSSData == NULL)
     {
         SetMainCallback2(Cb2_ExitPSS);
@@ -6700,7 +6700,7 @@ static void SetMonMarkings(u8 markings)
 
 static bool8 CanMovePartyMon(void)
 {
-    if (sBoxCursorArea == CURSOR_AREA_IN_PARTY && !sIsMonBeingMoved && CountPartyAliveNonEggMonsExcept(sBoxCursorPosition) == 0)
+    if (sBoxCursorArea == CURSOR_AREA_IN_PARTY && !sIsMonBeingMoved && CountPartyAliveNonEggMonsExcept(sBoxCursorPosition) == 1)
         return TRUE;
     else
         return FALSE;
@@ -6710,7 +6710,7 @@ static bool8 CanShiftMon(void)
 {
     if (sIsMonBeingMoved)
     {
-        if (sBoxCursorArea == CURSOR_AREA_IN_PARTY && CountPartyAliveNonEggMonsExcept(sBoxCursorPosition) == 0)
+        if (sBoxCursorArea == CURSOR_AREA_IN_PARTY && CountPartyAliveNonEggMonsExcept(sBoxCursorPosition) == 1)
         {
             if (sPSSData->cursorMonIsEgg || GetMonData(&sPSSData->movingMon, MON_DATA_HP) == 0)
                 return FALSE;
@@ -7440,7 +7440,7 @@ static u8 HandleInput_OnButtons(void)
             sPSSData->field_CD7 = 1;
             break;
         }
-        
+
         if (JOY_REPEAT(DPAD_DOWN | START_BUTTON))
         {
             retVal = 1;
