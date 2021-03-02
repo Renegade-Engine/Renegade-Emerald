@@ -741,7 +741,7 @@ static void InitPartyMenuBoxes(u8 layout)
 
     if (layout == PARTY_LAYOUT_MULTI_SHOWCASE)
         sPartyMenuBoxes[3].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
-    else if (layout != PARTY_LAYOUT_SINGLE)
+    else if (gPlayerPartyCount != 1)
         sPartyMenuBoxes[1].infoRects = &sPartyBoxInfoRects[PARTY_BOX_LEFT_COLUMN];
 }
 
@@ -1431,7 +1431,7 @@ static void UpdateCurrentPartySelection(s8 *slotPtr, s8 movementDir)
     s8 newSlotId = *slotPtr;
     u8 layout = gPartyMenu.layout;
 
-    if (layout == PARTY_LAYOUT_SINGLE)
+    if (gPlayerPartyCount == 1)
         UpdatePartySelectionSingleLayout(slotPtr, movementDir);
     else
         UpdatePartySelectionDoubleLayout(slotPtr, movementDir);
@@ -2007,7 +2007,10 @@ static void InitPartyMenuWindows(u8 layout)
         InitWindows(sSinglePartyMenuWindowTemplate);
         break;
     case PARTY_LAYOUT_DOUBLE:
-        InitWindows(sDoublePartyMenuWindowTemplate);
+        if (gPlayerPartyCount == 1)
+            InitWindows(sSinglePartyMenuWindowTemplate);
+        else
+            InitWindows(sDoublePartyMenuWindowTemplate);
         break;
     case PARTY_LAYOUT_MULTI:
         InitWindows(sMultiPartyMenuWindowTemplate);
