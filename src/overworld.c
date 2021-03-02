@@ -1,5 +1,6 @@
 #include "global.h"
 #include "overworld.h"
+#include "battle.h"
 #include "battle_pyramid.h"
 #include "battle_setup.h"
 #include "berry.h"
@@ -60,6 +61,7 @@
 #include "wild_encounter.h"
 #include "frontier_util.h"
 #include "constants/abilities.h"
+#include "constants/battle.h"
 #include "constants/layouts.h"
 #include "constants/map_types.h"
 #include "constants/maps.h"
@@ -357,7 +359,10 @@ static void (*const gMovementStatusHandler[])(struct LinkPlayerObjectEvent *, st
 void DoWhiteOut(void)
 {
     ScriptContext2_RunNewScript(EventScript_WhiteOut);
-    SetMoney(&gSaveBlock1Ptr->money, GetMoney(&gSaveBlock1Ptr->money) / 2);
+    if ((gBattleOutcome & B_OUTCOME_WON) == 0)
+    {
+        SetMoney(&gSaveBlock1Ptr->money, GetMoney(&gSaveBlock1Ptr->money) / 2);
+    }
     HealPlayerParty();
     Overworld_ResetStateAfterWhiteOut();
     SetWarpDestinationToLastHealLocation();
