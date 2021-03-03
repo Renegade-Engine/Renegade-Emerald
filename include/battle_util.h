@@ -105,6 +105,7 @@ void ClearFuryCutterDestinyBondGrudge(u8 battlerId);
 void HandleAction_RunBattleScript(void);
 u32 SetRandomTarget(u32 battlerId);
 u8 GetMoveTarget(u16 move, u8 setTarget);
+u8 GetBadgeCount(void);
 u8 IsMonDisobedient(void);
 u32 GetBattlerHoldEffect(u8 battlerId, bool32 checkNegating);
 u32 GetBattlerHoldEffectParam(u8 battlerId);
@@ -128,7 +129,6 @@ bool32 CanBattlerGetOrLoseItem(u8 battlerId, u16 itemId);
 struct Pokemon *GetIllusionMonPtr(u32 battlerId);
 void ClearIllusionMon(u32 battlerId);
 bool32 SetIllusionMon(struct Pokemon *mon, u32 battlerId);
-bool8 ShouldGetStatBadgeBoost(u16 flagId, u8 battlerId);
 u8 GetBattleMoveSplit(u32 moveId);
 
 #endif // GUARD_BATTLE_UTIL_H

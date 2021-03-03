@@ -141,8 +141,8 @@
     },
     {
       "type": "trigger",
-      "x": 1,
-      "y": 3,
+      "x": 0,
+      "y": 0,
       "elevation": 0,
       "var": "VAR_LITTLEROOT_RIVAL_STATE",
       "var_value": "2",
@@ -150,8 +150,8 @@
     },
     {
       "type": "trigger",
-      "x": 2,
-      "y": 4,
+      "x": 1,
+      "y": 0,
       "elevation": 0,
       "var": "VAR_LITTLEROOT_RIVAL_STATE",
       "var_value": "2",
@@ -159,8 +159,8 @@
     },
     {
       "type": "trigger",
-      "x": 3,
-      "y": 3,
+      "x": 2,
+      "y": 0,
       "elevation": 0,
       "var": "VAR_LITTLEROOT_RIVAL_STATE",
       "var_value": "2",

@@ -1787,7 +1787,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     s32 i, j;
     u8 monsCount;
     u8 fixedLvl = 1;
-    u8 baseLvl = 1;
+    u8 baseLvl = GetBadgeCount() * 10 + 5;
     u8 monLvl = 1;
     u16 evoSpecies = SPECIES_NONE;
     const struct TrainerMonNoItemDefaultMoves *noItemDefaultMovesData = gTrainers[trainerNum].party.NoItemDefaultMoves;
@@ -1888,7 +1888,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             }
             personalityValue += nameHash << 8;
             fixedIV = fixedIV * 31 / 255;
-            monLvl = monLvl > fixedLvl ? monLvl : fixedLvl;
+            monLvl = max(monLvl, fixedLvl);
             do
             {
                 CreateMon(&party[i], evoSpecies, monLvl, fixedIV, TRUE, personalityValue, OT_ID_RANDOM_NO_SHINY, 0);
@@ -1923,7 +1923,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             }
         }
 
-        gBattleTypeFlags |= gTrainers[trainerNum].doubleBattle;
+        gBattleTypeFlags |= (GetMonsStateToDoubles() == PLAYER_HAS_TWO_USABLE_MONS && monsCount > 1);
     }
 
     return gTrainers[trainerNum].partySize;
@@ -4269,14 +4269,6 @@ u32 GetBattlerTotalSpeedStat(u8 battlerId)
     speed *= gStatStageRatios[gBattleMons[battlerId].statStages[STAT_SPEED]][0];
     speed /= gStatStageRatios[gBattleMons[battlerId].statStages[STAT_SPEED]][1];
 
-    // player's badge boost
-    if (!(gBattleTypeFlags & (BATTLE_TYPE_LINK | BATTLE_TYPE_x2000000 | BATTLE_TYPE_FRONTIER))
-        && ShouldGetStatBadgeBoost(FLAG_BADGE03_GET, battlerId)
-        && GetBattlerSide(battlerId) == B_SIDE_PLAYER)
-    {
-        speed = (speed * 110) / 100;
-    }
-
     // item effects
     if (GetBattlerHoldEffect(battlerId, FALSE) == HOLD_EFFECT_MACHO_BRACE || GetBattlerHoldEffect(battlerId, FALSE) == HOLD_EFFECT_POWER_ITEM)
         speed /= 2;
@@ -4867,6 +4859,14 @@ static void HandleEndTurn_MonFled(void)
 static void HandleEndTurn_FinishBattle(void)
 {
     u32 i;
+
+    //restore all PPs
+    for (i = 0; i < gPlayerPartyCount; i++)
+    {
+        if (GetMonData(&gPlayerParty[i], MON_DATA_SANITY_HAS_SPECIES)
+        && !GetMonData(&gPlayerParty[i], MON_DATA_SANITY_IS_EGG))
+            PokemonUseItemEffects(&gPlayerParty[i], ITEM_MAX_ELIXIR, i, 0, 0);
+    }
 
     if (gCurrentActionFuncId == B_ACTION_TRY_FINISH || gCurrentActionFuncId == B_ACTION_FINISHED)
     {

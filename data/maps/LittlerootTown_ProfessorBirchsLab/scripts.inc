@@ -117,7 +117,7 @@ LittlerootTown_ProfessorBirchsLab_OnFrame: @ 81F9DB9
 @ This is just where the game tells you its yours and lets you nickname it
 LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent:: @ 81F9DDB
 	lockall
-	bufferleadmonspeciesname 0
+	bufferpartymonnick 0, 1
 	message LittlerootTown_ProfessorBirchsLab_Text_LikeYouToHavePokemon
 	waitmessage
 	playfanfare MUS_OBTAIN_ITEM
@@ -130,7 +130,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent:: @ 81F9DDB
 	end
 
 LittlerootTown_ProfessorBirchsLab_EventScript_NicknameStarter:: @ 81F9E07
-	setvar VAR_0x8004, 0
+	setvar VAR_0x8004, 1
 	call Common_EventScript_NameReceivedPartyMon
 	goto LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival
 	end

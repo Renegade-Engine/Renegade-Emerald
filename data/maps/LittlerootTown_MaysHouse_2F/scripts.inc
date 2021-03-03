@@ -59,9 +59,45 @@ LittlerootTown_MaysHouse_2F_EventScript_RivalsPokeBall:: @ 81F9334
 	lockall
 	compare VAR_LITTLEROOT_RIVAL_STATE, 2
 	goto_if_eq LittlerootTown_MaysHouse_2F_EventScript_MeetMay
-	msgbox RivalsHouse_2F_Text_ItsRivalsPokeBall, MSGBOX_DEFAULT
+	msgbox RivalsHouse_2F_Text_TakeBallContainingStarter, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq LittlerootTown_MaysHouse_2F_EventScript_LeaveStarter
+	goto LittlerootTown_MaysHouse_2F_EventScript_GiveStarter
+	end
+
+LittlerootTown_MaysHouse_2F_EventScript_LeaveStarter::
+	msgbox RivalsHouse_2F_Text_LeftPokeBallWhereItWas, MSGBOX_DEFAULT
 	releaseall
 	end
+
+LittlerootTown_MaysHouse_2F_EventScript_GiveStarter::
+	setvar VAR_TEMP_1, SPECIES_EEVEE
+	givemon SPECIES_EEVEE, 3, ITEM_NONE
+	call LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarterFanfare
+	msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
+	compare VAR_RESULT, NO
+	goto_if_eq LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarter
+	call Common_EventScript_GetGiftMonPartySlot
+	call Common_EventScript_NameReceivedPartyMon
+	goto LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarter
+	end
+
+LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarter::
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
+	setflag FLAG_SYS_POKEMON_GET
+	setvar VAR_LITTLEROOT_TOWN_STATE, 1
+	releaseall
+	end
+
+LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarterFanfare:: @ 82228EB
+	bufferspeciesname 1, SPECIES_EEVEE
+	removeobject 16
+	playfanfare MUS_OBTAIN_ITEM
+	message RivalsHouse_2F_Text_ObtainedStarter
+	waitmessage
+	waitfanfare
+	bufferspeciesname 0, SPECIES_EEVEE
+	return
 
 LittlerootTown_MaysHouse_2F_EventScript_MeetMay:: @ 81F934A
 	delay 10
@@ -83,10 +119,8 @@ LittlerootTown_MaysHouse_2F_EventScript_MeetMay:: @ 81F934A
 	call_if_eq LittlerootTown_MaysHouse_2F_EventScript_MeetMayWest
 	compare VAR_FACING, DIR_EAST
 	call_if_eq LittlerootTown_MaysHouse_2F_EventScript_MeetMayEast
-	setvar VAR_LITTLEROOT_RIVAL_STATE, 3
-	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
-	clearflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_BEDROOM
-	setvar VAR_LITTLEROOT_TOWN_STATE, 1
+	setvar VAR_LITTLEROOT_RIVAL_STATE, 3	
+	clearflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_RIVAL_BEDROOM	
 	savebgm MUS_DUMMY
 	fadedefaultbgm
 	releaseall
@@ -416,3 +450,16 @@ RivalsHouse_2F_Text_BrendanWhereShouldIGoNext: @ 81F9BE7
 	.string "Hey, {PLAYER}, if I see you while I'm out\n"
 	.string "catching POKéMON, I can pitch you a\l"
 	.string "battle if you'd like.$"
+
+RivalsHouse_2F_Text_TakeBallContainingStarter:
+	.string "{PLAYER} checked the POKé BALL.\p"
+	.string "It contained the POKéMON\n"
+	.string "EEVEE.\p"
+	.string "Take the POKé BALL?$"
+
+RivalsHouse_2F_Text_ObtainedStarter:
+	.string "{PLAYER} obtained an EEVEE.$"
+
+RivalsHouse_2F_Text_LeftPokeBallWhereItWas:
+	.string "{PLAYER} left the POKé BALL where\n"
+	.string "it was.$"
