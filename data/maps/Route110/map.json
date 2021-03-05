@@ -188,8 +188,8 @@
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_LASS",
-      "x": 33,
-      "y": 15,
+      "x": 37,
+      "y": 23,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_LEFT",
       "movement_range_x": 0,
@@ -501,8 +501,8 @@
   ],
   "warp_events": [
     {
-      "x": 35,
-      "y": 24,
+      "x": 28,
+      "y": 1,
       "elevation": 3,
       "dest_map": "MAP_NEW_MAUVILLE_ENTRANCE",
       "dest_warp_id": 0
