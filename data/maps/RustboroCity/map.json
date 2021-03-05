@@ -97,8 +97,8 @@
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_MAN_3",
-      "x": 26,
-      "y": 23,
+      "x": 29,
+      "y": 20,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_LOOK_AROUND",
       "movement_range_x": 1,
@@ -149,7 +149,7 @@
     },
     {
       "graphics_id": "OBJ_EVENT_GFX_AQUA_MEMBER_M",
-      "x": 13,
+      "x": 12,
       "y": 21,
       "elevation": 3,
       "movement_type": "MOVEMENT_TYPE_FACE_RIGHT",
@@ -329,46 +329,46 @@
     {
       "type": "trigger",
       "x": 23,
-      "y": 20,
+      "y": 23,
       "elevation": 3,
       "var": "VAR_RUSTBORO_CITY_STATE",
-      "var_value": "1",
+      "var_value": "0",
       "script": "RustboroCity_EventScript_StolenGoodsTrigger0"
     },
     {
       "type": "trigger",
-      "x": 23,
-      "y": 21,
+      "x": 22,
+      "y": 24,
       "elevation": 3,
       "var": "VAR_RUSTBORO_CITY_STATE",
-      "var_value": "1",
+      "var_value": "0",
       "script": "RustboroCity_EventScript_StolenGoodsTrigger1"
     },
     {
       "type": "trigger",
-      "x": 23,
-      "y": 22,
+      "x": 21,
+      "y": 23,
       "elevation": 3,
       "var": "VAR_RUSTBORO_CITY_STATE",
-      "var_value": "1",
+      "var_value": "0",
       "script": "RustboroCity_EventScript_StolenGoodsTrigger2"
     },
     {
       "type": "trigger",
-      "x": 23,
+      "x": 20,
       "y": 23,
       "elevation": 3,
       "var": "VAR_RUSTBORO_CITY_STATE",
-      "var_value": "1",
+      "var_value": "0",
       "script": "RustboroCity_EventScript_StolenGoodsTrigger3"
     },
     {
       "type": "trigger",
-      "x": 23,
+      "x": 19,
       "y": 24,
       "elevation": 3,
       "var": "VAR_RUSTBORO_CITY_STATE",
-      "var_value": "1",
+      "var_value": "0",
       "script": "RustboroCity_EventScript_StolenGoodsTrigger4"
     },
     {
