@@ -342,29 +342,29 @@
     },
     {
       "type": "weather",
-      "x": 94,
+      "x": 90,
       "y": 8,
       "elevation": 3,
       "weather": "COORD_EVENT_WEATHER_SUNNY"
     },
     {
       "type": "weather",
-      "x": 94,
+      "x": 91,
+      "y": 7,
+      "elevation": 3,
+      "weather": "COORD_EVENT_WEATHER_SUNNY"
+    },
+    {
+      "type": "weather",
+      "x": 89,
       "y": 9,
       "elevation": 3,
       "weather": "COORD_EVENT_WEATHER_SUNNY"
     },
     {
       "type": "weather",
-      "x": 94,
+      "x": 89,
       "y": 10,
-      "elevation": 3,
-      "weather": "COORD_EVENT_WEATHER_SUNNY"
-    },
-    {
-      "type": "weather",
-      "x": 94,
-      "y": 11,
       "elevation": 0,
       "weather": "COORD_EVENT_WEATHER_SUNNY"
     },
