@@ -1313,10 +1313,7 @@ RustboroCity_Text_IdBetterGetBackToWork: @ 81E2464
 
 RustboroCity_Text_YouCanHave2On2Battle: @ 81E249D
 	.string "Did you know this?\p"
-	.string "You can have a 2-on-2 battle even\n"
-	.string "if you're not with another TRAINER.\p"
 	.string "If you catch the eyes of two TRAINERS\n"
-	.string "when you have two or more POKéMON,\l"
 	.string "they'll both challenge you.\p"
 	.string "Don't you think it'd be cool if you\n"
 	.string "could beat two TRAINERS by yourself?$"
