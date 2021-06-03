@@ -874,7 +874,7 @@
     {
       "id": "LAYOUT_HARBOR",
       "name": "Harbor_Layout",
-      "width": 24,
+      "width": 38,
       "height": 15,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_Facility",
