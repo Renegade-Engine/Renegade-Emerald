@@ -590,7 +590,7 @@
       "x": 22,
       "y": 6,
       "elevation": 0,
-      "dest_map": "MAP_ROUTE123_BERRY_MASTERS_HOUSE",
+      "dest_map": "MAP_ROUTE104_PRETTY_PETAL_FLOWER_SHOP",
       "dest_warp_id": 0
     }
   ],
@@ -795,7 +795,7 @@
       "y": 7,
       "elevation": 3,
       "player_facing_dir": "BG_EVENT_PLAYER_FACING_ANY",
-      "script": "Route123_EventScript_BerryMastersHouseSign"
+      "script": "Route104_EventScript_FlowerShopSign"
     },
     {
       "type": "secret_base",
