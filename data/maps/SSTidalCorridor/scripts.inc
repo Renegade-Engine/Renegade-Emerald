@@ -1,12 +1,14 @@
 .set LOCALID_SAILOR, 1
 .set LOCALID_SCOTT, 5
+.set LOCALID_RIVAL, 6
 
 SSTidalCorridor_MapScripts:: @ 823BFCF
 	map_script MAP_SCRIPT_ON_FRAME_TABLE, SSTidalCorridor_OnFrame
 	.byte 0
 
 SSTidalCorridor_OnFrame: @ 823BFD5
-	map_script_2 VAR_SS_TIDAL_SCOTT_STATE, 0, SSTidalCorridor_EventScript_ScottScene
+	map_script_2 VAR_SS_TIDAL_SCOTT_STATE, 0, SSTidalCorridor_EventScript_RivalScene
+	map_script_2 VAR_SS_TIDAL_SCOTT_STATE, 2, SSTidalCorridor_EventScript_CheckScottScene
 	map_script_2 VAR_SS_TIDAL_STATE, SS_TIDAL_BOARD_SLATEPORT, SSTidalCorridor_EventScript_DepartSlateportForLilycove
 	map_script_2 VAR_SS_TIDAL_STATE, SS_TIDAL_BOARD_LILYCOVE, SSTidalCorridor_EventScript_DepartLilycoveForSlateport
 	map_script_2 VAR_SS_TIDAL_STATE, SS_TIDAL_EXIT_CURRENTS_RIGHT, SSTidalCorridor_EventScript_HalfwayToLilycove
@@ -192,6 +194,63 @@ SSTidalCorridor_EventScript_CheckIfTrainersDefeated:: @ 823C1C7
 SSTidalCorridor_EventScript_TrainerNotDefeated:: @ 823C218
 	return
 
+SSTidalCorridor_EventScript_RivalScene::
+	lockall
+	setvar VAR_SS_TIDAL_SCOTT_STATE, 1
+	checkplayergender
+	compare VAR_RESULT, MALE
+	call_if_eq SSTidalCorridor_EventScript_PlayMayMusic
+	compare VAR_RESULT, FEMALE
+	call_if_eq SSTidalCorridor_EventScript_PlayBrendanMusic
+	delay 65
+	applymovement LOCALID_RIVAL, SSTidalCorridor_Movement_RivalApproachPlayer
+	waitmovement 0
+	applymovement OBJ_EVENT_ID_PLAYER, SSTidalCorridor_Movement_PlayerFacesRival
+	waitmovement 0
+	checkplayergender
+	compare VAR_RESULT, MALE
+	call_if_eq SSTidalCorridor_EventScript_MeetMay
+	compare VAR_RESULT, FEMALE
+	call_if_eq SSTidalCorridor_EventScript_MeetBrendan
+	applymovement OBJ_EVENT_ID_PLAYER, SSTidalCorridor_Movement_PlayerWatchRivalApproachCabin
+	applymovement LOCALID_RIVAL, SSTidalCorridor_Movement_RivalApproachCabin
+	waitmovement 0
+	opendoor 7, 9
+	waitdooranim
+	applymovement LOCALID_RIVAL, SSTidalCorridor_Movement_RivalEntersCabin
+	waitmovement 0
+	removeobject LOCALID_RIVAL
+	closedoor 7, 9
+	waitdooranim
+	setflag FLAG_HIDE_SS_TIDAL_CORRIDOR_RIVAL
+	clearflag FLAG_HIDE_SS_TIDAL_CABIN_RIVAL
+	savebgm MUS_DUMMY
+	fadedefaultbgm
+	releaseall
+    end
+
+SSTidalCorridor_EventScript_PlayMayMusic:: @ 81F4501
+	playbgm MUS_ENCOUNTER_MAY, 0
+	return
+
+SSTidalCorridor_EventScript_PlayBrendanMusic:: @ 81F4506
+	playbgm MUS_ENCOUNTER_BRENDAN, 0
+	return
+
+SSTidalCorridor_EventScript_MeetMay::
+	msgbox SSTidalCorridor_Text_TalkMay, MSGBOX_DEFAULT
+	closemessage
+	return
+
+SSTidalCorridor_EventScript_MeetBrendan::
+	msgbox SSTidalCorridor_Text_TalkBrendan, MSGBOX_DEFAULT
+	closemessage
+	return
+
+SSTidalCorridor_EventScript_CheckScottScene::
+	call_if_set FLAG_SYS_GAME_CLEAR, SSTidalCorridor_EventScript_ScottScene
+	end
+
 SSTidalCorridor_EventScript_ScottScene:: @ 823C219
 	lockall
 	applymovement LOCALID_SCOTT, SSTidalCorridor_Movement_ScottApproachPlayer
@@ -211,9 +270,41 @@ SSTidalCorridor_EventScript_ScottScene:: @ 823C219
 	waitmovement 0
 	delay 30
 	setflag FLAG_MET_SCOTT_ON_SS_TIDAL
-	setvar VAR_SS_TIDAL_SCOTT_STATE, 1
+	setvar VAR_SS_TIDAL_SCOTT_STATE, 3
 	releaseall
 	end
+
+SSTidalCorridor_Movement_RivalApproachPlayer:
+	walk_down
+	walk_down
+	walk_down
+	walk_down
+	walk_down
+	step_end
+
+SSTidalCorridor_Movement_PlayerFacesRival:
+	walk_in_place_fastest_up
+	step_end
+
+SSTidalCorridor_Movement_RivalApproachCabin:
+	walk_right
+	walk_down
+	walk_right
+	walk_right
+	walk_right
+	walk_right
+	walk_right
+	walk_in_place_fastest_up
+	step_end
+
+SSTidalCorridor_Movement_PlayerWatchRivalApproachCabin:
+	delay_16
+	walk_in_place_fastest_right
+	step_end
+
+SSTidalCorridor_Movement_RivalEntersCabin:
+	walk_up
+	step_end
 
 SSTidalCorridor_Movement_ScottApproachPlayer: @ 823C26D
 	walk_left
@@ -258,6 +349,30 @@ SSTidalCorridor_Movement_SailorReturn: @ 823C28B
 	walk_left
 	walk_in_place_fastest_up
 	step_end
+
+SSTidalCorridor_Text_TalkMay:
+	.string "MAY: Hi there, {PLAYER}{KUN}!\p"
+	.string "Are you also coming aboard the ferry\n"
+	.string "to LILYCOVE CITY?\p"
+	.string "My dad bought me a ticket as soon as\n"
+	.string "the ferry was on service.\p"
+	.string "I'm planning to go to the SAFARI ZONE\n"
+	.string "on ROUTE 121 to catch lot of POKéMON!\p"
+	.string "Ah, your cabin is No. 2 too?\n"
+	.string "We'll be traveling together then!\p"
+	.string "Anyway, I need to get ready\n"
+	.string "so I'll be going now.$"
+
+SSTidalCorridor_Text_TalkBrendan:
+	.string "BRENDAN: Oh, it is {PLAYER}.\n"
+	.string "Are you going to LILYCOVE CITY as well?\p"
+	.string "Dad bought me a ticket when the ferry\n"
+	.string "was on service so that I could visit\l"
+	.string "the SAFARI ZONE on ROUTE 121.\p"
+	.string "Your cabin is No. 2 too?\n"
+	.string "Then we'll be doing this travel together.\p"
+	.string "However, I need to ready myself\n"
+	.string "so I'll be going now.$"
 
 SSTidalCorridor_Text_ScottBattleFrontierInvite: @ 823C28F
 	.string "SCOTT: Well, hi, hi!\n"

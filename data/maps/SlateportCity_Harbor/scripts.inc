@@ -13,19 +13,28 @@ SlateportCity_Harbor_OnTransition: @ 820C983
 	setvar VAR_TEMP_1, 0
 	compare VAR_SLATEPORT_HARBOR_STATE, 1
 	call_if_eq SlateportCity_Harbor_EventScript_ReadyAquaEscapeScene
-	call_if_set FLAG_SYS_GAME_CLEAR, SlateportCity_Harbor_EventScript_ShowSSTidal
+	call_if_set FLAG_RECEIVED_SS_TICKET, SlateportCity_Harbor_EventScript_ShowSSTidal
 	end
 
 SlateportCity_Harbor_EventScript_ShowSSTidal:: @ 820C9A5
 	clearflag FLAG_HIDE_SLATEPORT_CITY_HARBOR_SS_TIDAL
+	clearflag FLAG_HIDE_LILYCOVE_HARBOR_SSTIDAL
+	clearflag FLAG_HIDE_SS_TIDAL_CORRIDOR_MR_BRINEY
 	return
 
 SlateportCity_Harbor_EventScript_ReadyAquaEscapeScene:: @ 820C9A9
 	savebgm MUS_ENCOUNTER_AQUA
-	setobjectxyperm LOCALID_CAPT_STERN, 12, 13
+	setobjectxyperm LOCALID_CAPT_STERN, 30, 13
 	setobjectmovementtype LOCALID_CAPT_STERN, MOVEMENT_TYPE_FACE_LEFT
-	setflag FLAG_HIDE_SLATEPORT_CITY_HARBOR_PATRONS
+	@ setflag FLAG_HIDE_SLATEPORT_CITY_HARBOR_PATRONS
 	return
+
+SlateportCity_Harbor_EventScript_YouCantGoNow::
+	msgbox SlateportCity_Harbor_Text_YouCantGoNow, MSGBOX_DEFAULT
+	closemessage
+	applymovement OBJ_EVENT_ID_PLAYER, SlateportCity_Harbor_Movement_PlayerWalkUp
+	waitmovement 0
+	end
 
 SlateportCity_Harbor_EventScript_AquaEscapeTrigger0:: @ 820C9BB
 	lockall
@@ -145,10 +154,12 @@ SlateportCity_Harbor_Movement_SternApproachPlayer0: @ 820CAE0
 	walk_left
 	walk_left
 	walk_left
+	walk_left
 	walk_up
 	step_end
 
 SlateportCity_Harbor_Movement_SternApproachPlayer1: @ 820CAE6
+	walk_left
 	walk_left
 	walk_left
 	walk_up
@@ -159,16 +170,26 @@ SlateportCity_Harbor_Movement_SternApproachPlayer: @ 820CAEB
 	walk_left
 	walk_left
 	walk_left
+	walk_left
 	step_end
 
 SlateportCity_Harbor_Movement_PlayerWalkUp: @ 820CAEF
 	walk_up
 	step_end
 
+SlateportCity_Harbor_Movement_SternLooksDown:
+	walk_in_place_fastest_down
+	step_end
+
+SlateportCity_Harbor_Movement_SternLooksLeft:
+	delay_16
+	walk_in_place_fastest_left
+	step_end
+
 SlateportCity_Harbor_EventScript_FerryAttendant:: @ 820CAF1
 	lock
 	faceplayer
-	goto_if_set FLAG_SYS_GAME_CLEAR, SlateportCity_Harbor_EventScript_AskForTicket
+	goto_if_set FLAG_RECEIVED_SS_TICKET, SlateportCity_Harbor_EventScript_AskForTicket
 	msgbox SlateportCity_Harbor_Text_FerryServiceUnavailable, MSGBOX_DEFAULT
 	release
 	end
@@ -561,3 +582,8 @@ SlateportCity_Harbor_Text_HandedScannerToStern: @ 820D94A
 SlateportCity_Harbor_Text_ThisWillHelpResearch: @ 820D970
 	.string "CAPT. STERN: Thanks, {PLAYER}{KUN}!\n"
 	.string "This will help our research a lot!$"
+
+SlateportCity_Harbor_Text_YouCantGoNow:
+	.string "CAPT. STERN: {PLAYER}{KUN}, you can't go now!\n"
+	.string "They are going to take the submarine!$"
+	

@@ -21,7 +21,7 @@ DewfordTown_OnTransition: @ 81E950D
 DewfordTown_EventScript_Briney:: @ 81E9511
 	lock
 	faceplayer
-	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_ReturnToPetalburgPrompt
+	@ goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_ReturnToPetalburgPrompt
 	message DewfordTown_Text_WhereAreWeBound
 	waitmessage
 	multichoicedefault 21, 6, MULTI_BRINEY_ON_DEWFORD, 2, 0
@@ -47,6 +47,7 @@ DewfordTown_EventScript_ChooseSlateport:: @ 81E956A
 	end
 
 DewfordTown_EventScript_CancelSailSelect:: @ 81E957A
+	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_GoDeliverIllBeWaiting
 	msgbox DewfordTown_Text_JustTellMeWhenYouNeedToSetSail, MSGBOX_DEFAULT
 	closemessage
 	release
@@ -57,6 +58,12 @@ DewfordTown_EventScript_ReturnToPetalburgPrompt:: @ 81E9585
 	compare VAR_RESULT, YES
 	goto_if_eq DewfordTown_EventScript_SailBackToPetalburg
 	msgbox DewfordTown_Text_GoDeliverIllBeWaiting, MSGBOX_DEFAULT
+	release
+	end
+
+DewfordTown_EventScript_GoDeliverIllBeWaiting::
+	msgbox DewfordTown_Text_GoDeliverIllBeWaiting, MSGBOX_DEFAULT
+	closemessage
 	release
 	end
 
