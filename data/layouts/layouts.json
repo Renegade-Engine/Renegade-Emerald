@@ -274,7 +274,7 @@
     {
       "id": "LAYOUT_ROUTE112",
       "name": "Route112_Layout",
-      "width": 40,
+      "width": 50,
       "height": 60,
       "primary_tileset": "gTileset_General",
       "secondary_tileset": "gTileset_Lavaridge",
@@ -337,7 +337,7 @@
       "width": 80,
       "height": 20,
       "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_Mauville",
+      "secondary_tileset": "gTileset_Fortree",
       "border_filepath": "data/layouts/Route118/border.bin",
       "blockdata_filepath": "data/layouts/Route118/map.bin"
     },
@@ -387,7 +387,7 @@
       "width": 140,
       "height": 20,
       "primary_tileset": "gTileset_General",
-      "secondary_tileset": "gTileset_Lilycove",
+      "secondary_tileset": "gTileset_Rustboro",
       "border_filepath": "data/layouts/Route123/border.bin",
       "blockdata_filepath": "data/layouts/Route123/map.bin"
     },
