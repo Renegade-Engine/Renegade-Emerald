@@ -4955,7 +4955,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         break;
                     case 5:
                         friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
-                        if (FRIENDSHIP_LV(friendship) == 0 && (retVal == 0 || var_28 != 0) && !ShouldSkipFriendshipChange() && var_34 == 0)
+                        if (FRIENDSHIP_LV(friendship) == 0)
                         {
                             UPDATE_FRIENDSHIP_FROM_ITEM;
                         }
@@ -4963,8 +4963,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         break;
                     case 6:
                         friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
-                        if (FRIENDSHIP_LV(friendship) == 1 && GetMonData(mon, MON_DATA_FRIENDSHIP, NULL) < 200
-                         && (retVal == 0 || var_28 != 0) && !ShouldSkipFriendshipChange() && var_34 == 0)
+                        if (FRIENDSHIP_LV(friendship) == 1)
                         {
                             UPDATE_FRIENDSHIP_FROM_ITEM;
                         }
@@ -4972,7 +4971,7 @@ bool8 PokemonUseItemEffects(struct Pokemon *mon, u16 item, u8 partyIndex, u8 mov
                         break;
                     case 7:
                         friendship = GetMonData(mon, MON_DATA_FRIENDSHIP, NULL);
-                        if (FRIENDSHIP_LV(friendship) == 2 && (retVal == 0 || var_28 != 0) && !ShouldSkipFriendshipChange() && var_34 == 0)
+                        if (FRIENDSHIP_LV(friendship) == 2)
                         {
                             UPDATE_FRIENDSHIP_FROM_ITEM;
                         }
@@ -5683,7 +5682,7 @@ void AdjustFriendship(struct Pokemon *mon, u8 event)
         }
 
         mod = sFriendshipEventModifiers[event][friendshipLevel];
-        if (mod > 0 && holdEffect == HOLD_EFFECT_HAPPINESS_UP)
+        if (mod > 0 && holdEffect == HOLD_EFFECT_FRIENDSHIP_UP)
             mod = (150 * mod) / 100;
         friendship += mod;
         if (mod > 0)

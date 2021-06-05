@@ -776,8 +776,8 @@ static void Task_EvolutionScene(u8 taskId)
     case EVOSTATE_TRY_LEARN_MOVE:
         if (!IsTextPrinterActive(0))
         {
-            var = MonTryLearningNewMoveEvolution(mon, gTasks[taskID].tLearnsFirstMove);
-            if (var != 0 && !gTasks[taskID].tEvoWasStopped)
+            var = MonTryLearningNewMoveEvolution(mon, gTasks[taskId].tLearnsFirstMove);
+            if (var != 0 && !gTasks[taskId].tEvoWasStopped)
             {
                 u8 text[20];
 
@@ -1197,8 +1197,8 @@ static void Task_TradeEvolutionScene(u8 taskId)
     case T_EVOSTATE_TRY_LEARN_MOVE:
         if (!IsTextPrinterActive(0) && IsFanfareTaskInactive() == TRUE)
         {
-            var = MonTryLearningNewMoveEvolution(mon, gTasks[taskID].tLearnsFirstMove);
-            if (var != 0 && !gTasks[taskID].tEvoWasStopped)
+            var = MonTryLearningNewMoveEvolution(mon, gTasks[taskId].tLearnsFirstMove);
+            if (var != 0 && !gTasks[taskId].tEvoWasStopped)
             {
                 u8 text[20];
 
