@@ -1,4 +1,5 @@
 .set LOCALID_RIVAL, 1
+.set LOCALID_BALL, 15
 
 LittlerootTown_BrendansHouse_2F_MapScripts:: @ 81F83E3
 	map_script MAP_SCRIPT_ON_TRANSITION, LittlerootTown_BrendansHouse_2F_OnTransition
@@ -59,45 +60,8 @@ LittlerootTown_BrendansHouse_2F_EventScript_RivalsPokeBall:: @ 81F8481
 	lockall
 	compare VAR_LITTLEROOT_RIVAL_STATE, 2
 	goto_if_eq LittlerootTown_BrendansHouse_2F_EventScript_MeetBrendan
-	msgbox RivalsHouse_2F_Text_TakeBallContainingStarter, MSGBOX_YESNO
-	compare VAR_RESULT, NO
-	goto_if_eq LittlerootTown_BrendansHouse_2F_EventScript_LeaveStarter
-	goto LittlerootTown_BrendansHouse_2F_EventScript_GiveStarter
+	goto LittlerootTown_RivalsHouse_2F_EventScript_GiveStarterConfirmation
 	end
-
-LittlerootTown_BrendansHouse_2F_EventScript_LeaveStarter::
-	msgbox RivalsHouse_2F_Text_LeftPokeBallWhereItWas, MSGBOX_DEFAULT
-	releaseall
-	end
-
-LittlerootTown_BrendansHouse_2F_EventScript_GiveStarter::
-	setvar VAR_TEMP_1, SPECIES_EEVEE
-	givemon SPECIES_EEVEE, 3, ITEM_NONE
-	call LittlerootTown_BrendansHouse_2F_EventScript_ReceivedStarterFanfare
-	msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
-	compare VAR_RESULT, NO
-	goto_if_eq LittlerootTown_BrendansHouse_2F_EventScript_ReceivedStarter
-	call Common_EventScript_GetGiftMonPartySlot
-	call Common_EventScript_NameReceivedPartyMon
-	goto LittlerootTown_BrendansHouse_2F_EventScript_ReceivedStarter
-	end
-
-LittlerootTown_BrendansHouse_2F_EventScript_ReceivedStarter::
-	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL
-	setflag FLAG_SYS_POKEMON_GET
-	setvar VAR_LITTLEROOT_TOWN_STATE, 1
-	releaseall
-	end
-
-LittlerootTown_BrendansHouse_2F_EventScript_ReceivedStarterFanfare:: @ 82228EB
-	bufferspeciesname 1, SPECIES_EEVEE
-	removeobject 16
-	playfanfare MUS_OBTAIN_ITEM
-	message RivalsHouse_2F_Text_ObtainedStarter
-	waitmessage
-	waitfanfare
-	bufferspeciesname 0, SPECIES_EEVEE
-	return
 
 LittlerootTown_BrendansHouse_2F_EventScript_MeetBrendan:: @ 81F8497
 	delay 10
