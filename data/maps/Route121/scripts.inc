@@ -3,7 +3,19 @@
 .set LOCALID_GRUNT_3, 14
 
 Route121_MapScripts:: @ 81F5DFC
+	map_script MAP_SCRIPT_ON_RESUME, Route121_OnResume
 	.byte 0
+
+Route121_OnResume: @ 81F442F
+	call_if_set FLAG_SYS_CTRL_OBJ_DELETE, Route121_EventScript_RemoveKecleon
+	end
+
+Route121_EventScript_RemoveKecleon::
+	specialvar VAR_RESULT, GetBattleOutcome
+	compare VAR_RESULT, B_OUTCOME_CAUGHT
+	goto_if_ne Common_EventScript_NopReturn
+	removeobject VAR_LAST_TALKED
+	return
 
 Route121_EventScript_Woman:: @ 81F5DFD
 	msgbox Route121_Text_AheadLoomsMtPyre, MSGBOX_NPC
