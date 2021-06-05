@@ -67,7 +67,7 @@ static bool8 TryStartCoordEventScript(struct MapPosition *);
 static bool8 TryStartWarpEventScript(struct MapPosition *, u16);
 static bool8 TryStartMiscWalkingScripts(u16);
 static bool8 TryStartStepCountScript(u16);
-static void UpdateHappinessStepCounter(void);
+static void UpdateFriendshipStepCounter(void);
 static bool8 UpdatePoisonStepCounter(void);
 
 void FieldClearPlayerInput(struct FieldInput *input)
@@ -606,14 +606,15 @@ static bool8 TryStartStepCountScript(u16 metatileBehavior)
     return FALSE;
 }
 
-void Unref_ClearHappinessStepCounter(void)
+// Unused
+static void ClearFriendshipStepCounter(void)
 {
-    VarSet(VAR_HAPPINESS_STEP_COUNTER, 0);
+    VarSet(VAR_FRIENDSHIP_STEP_COUNTER, 0);
 }
 
-static void UpdateHappinessStepCounter(void)
+static void UpdateFriendshipStepCounter(void)
 {
-    u16 *ptr = GetVarPointer(VAR_HAPPINESS_STEP_COUNTER);
+    u16 *ptr = GetVarPointer(VAR_FRIENDSHIP_STEP_COUNTER);
     int i;
 
     (*ptr)++;
@@ -729,7 +730,8 @@ static bool8 TryStartWarpEventScript(struct MapPosition *position, u16 metatileB
         }
         if (MetatileBehavior_IsWarpOrBridge(metatileBehavior) == TRUE)
         {
-            sub_80B0268();
+            // Maybe unused? This MB is used by log bridges, but there's never a warp event on them
+            DoSpinExitWarp();
             return TRUE;
         }
         if (MetatileBehavior_IsMtPyreHole(metatileBehavior) == TRUE)
