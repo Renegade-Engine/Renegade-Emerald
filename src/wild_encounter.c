@@ -299,11 +299,11 @@ static u16 GetCurrentMapWildMonHeaderId(void)
                 i += alteringCaveId;
                 return i;
             }
-            if (IsDayTime()) {
-                return i;
-            } 
-            if (IsNightTime())
+            if (IsNightTime() 
+            && gWildMonHeaders[i + 1].mapGroup == gSaveBlock1Ptr->location.mapGroup 
+            && gWildMonHeaders[i + 1].mapNum == gSaveBlock1Ptr->location.mapNum)
                 return i + 1;
+            return i;
         }
     }
 
