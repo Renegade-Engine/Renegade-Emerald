@@ -202,7 +202,6 @@ SSTidalCorridor_EventScript_RivalScene::
 	call_if_eq SSTidalCorridor_EventScript_PlayMayMusic
 	compare VAR_RESULT, FEMALE
 	call_if_eq SSTidalCorridor_EventScript_PlayBrendanMusic
-	delay 65
 	applymovement LOCALID_RIVAL, SSTidalCorridor_Movement_RivalApproachPlayer
 	waitmovement 0
 	applymovement OBJ_EVENT_ID_PLAYER, SSTidalCorridor_Movement_PlayerFacesRival
