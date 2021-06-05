@@ -1789,6 +1789,7 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
     u8 fixedLvl = 1;
     u8 baseLvl = GetBadgeCount() * 10 + 5;
     u8 monLvl = 1;
+    u8 monFriendship;
     u16 evoSpecies = SPECIES_NONE;
     const struct TrainerMonNoItemDefaultMoves *noItemDefaultMovesData = gTrainers[trainerNum].party.NoItemDefaultMoves;
     const struct TrainerMonNoItemCustomMoves *monNoItemCustomMovesData = gTrainers[trainerNum].party.NoItemCustomMoves;
@@ -1888,10 +1889,13 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             }
             personalityValue += nameHash << 8;
             fixedIV = fixedIV * 31 / 255;
+            monLvl = monLvl > fixedLvl ? monLvl : fixedLvl;
             monLvl = max(monLvl, fixedLvl);
+            monFriendship = ESTIMATED_FRIENDSHIP(monLvl);
             do
             {
                 CreateMon(&party[i], evoSpecies, monLvl, fixedIV, TRUE, personalityValue, OT_ID_RANDOM_NO_SHINY, 0);
+                SetMonData(&party[i], MON_DATA_FRIENDSHIP, &monFriendship);
                 evoSpecies = GetEvolutionTargetSpecies(&party[i], 0, 0);
             }
             while (evoSpecies != SPECIES_NONE);
@@ -1923,7 +1927,6 @@ static u8 CreateNPCTrainerParty(struct Pokemon *party, u16 trainerNum, bool8 fir
             }
         }
 
-        gBattleTypeFlags |= (GetMonsStateToDoubles() == PLAYER_HAS_TWO_USABLE_MONS && monsCount > 1);
     }
 
     return gTrainers[trainerNum].partySize;
