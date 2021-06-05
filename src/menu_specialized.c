@@ -23,7 +23,6 @@
 #include "text_window.h"
 #include "trig.h"
 #include "window.h"
-#include "constants/berry.h"
 #include "constants/songs.h"
 #include "gba/io_reg.h"
 
@@ -74,7 +73,7 @@ static const struct WindowTemplate sUnknown_086253E8[] =
 
 static const u8 sPlayerNameTextColors[] =
 {
-    TEXT_COLOR_WHITE, TEXT_COLOR_DARK_GREY, TEXT_COLOR_LIGHT_GREY
+    TEXT_COLOR_WHITE, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_LIGHT_GRAY
 };
 
 static const u8 sEmptyItemName[] = _("");
@@ -217,14 +216,14 @@ bool8 sub_81D1C44(u8 count)
         return FALSE;
 
     for (i = 0; i < ARRAY_COUNT(sUnknown_0203CF48); i++)
-        sUnknown_0203CF48[i] = 0xFF;
+        sUnknown_0203CF48[i] = WINDOW_NONE;
 
     return TRUE;
 }
 
 u8 sub_81D1C84(u8 a0)
 {
-    if (sUnknown_0203CF48[a0] == 0xFF)
+    if (sUnknown_0203CF48[a0] == WINDOW_NONE)
     {
         if (a0 == 2)
         {
@@ -246,7 +245,7 @@ void sub_81D1D04(u8 a0)
     ClearStdWindowAndFrameToTransparent(sUnknown_0203CF48[a0], 0);
     ClearWindowTilemap(sUnknown_0203CF48[a0]);
     RemoveWindow(sUnknown_0203CF48[a0]);
-    sUnknown_0203CF48[a0] = 0xFF;
+    sUnknown_0203CF48[a0] = WINDOW_NONE;
 }
 
 static u8 sub_81D1D34(u8 a0)
@@ -262,10 +261,10 @@ static void sub_81D1D44(u8 windowId, s32 itemId, u8 y)
     if (itemId == LIST_CANCEL)
         return;
 
-    StringCopy(buffer, gSaveBlock1Ptr->mail[6 + itemId].playerName);
-    sub_81DB52C(buffer);
+    StringCopy(buffer, gSaveBlock1Ptr->mail[PARTY_SIZE + itemId].playerName);
+    ConvertInternationalPlayerName(buffer);
     length = StringLength(buffer);
-    if (length <= 5)
+    if (length < PLAYER_NAME_LENGTH - 1)
         ConvertInternationalString(buffer, LANGUAGE_JAPANESE);
     AddTextPrinterParameterized4(windowId, 1, 8, y, 0, 0, sPlayerNameTextColors, -1, buffer);
 }
@@ -311,7 +310,7 @@ static void sub_81D1E7C(s32 itemIndex, bool8 onInit, struct ListMenu *list)
 
 void sub_81D1E90(struct PlayerPCItemPageStruct *page)
 {
-    page->scrollIndicatorId = AddScrollIndicatorArrowPairParameterized(2, 0xC8, 12, 0x94, page->count - page->pageItems + 1, 0x6E, 0x6E, &page->itemsAbove);
+    page->scrollIndicatorTaskId = AddScrollIndicatorArrowPairParameterized(2, 0xC8, 12, 0x94, page->count - page->pageItems + 1, 0x6E, 0x6E, &page->itemsAbove);
 }
 
 void sub_81D1EC0(void)
@@ -841,7 +840,7 @@ void MoveRelearnerPrintText(u8 *str)
     FillWindowPixelBuffer(3, PIXEL_FILL(1));
     gTextFlags.canABSpeedUpPrint = TRUE;
     speed = GetPlayerTextSpeedDelay();
-    AddTextPrinterParameterized2(3, 1, str, speed, NULL, TEXT_COLOR_DARK_GREY, TEXT_COLOR_WHITE, 3);
+    AddTextPrinterParameterized2(3, 1, str, speed, NULL, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, 3);
 }
 
 bool16 MoveRelearnerRunTextPrinters(void)
@@ -880,89 +879,82 @@ s32 GetBoxOrPartyMonData(u16 boxId, u16 monId, s32 request, u8 *dst)
 // Gets the name/gender/level string for the condition menu
 static u8 *GetConditionMenuMonString(u8 *dst, u16 boxId, u16 monId)
 {
-    u16 species, level, gender;
+    u16 box, mon, species, level, gender;
     struct BoxPokemon *boxMon;
     u8 *str;
 
+    box = boxId;
+    mon = monId;
     *(dst++) = EXT_CTRL_CODE_BEGIN;
     *(dst++) = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
     *(dst++) = TEXT_COLOR_BLUE;
     *(dst++) = TEXT_COLOR_TRANSPARENT;
     *(dst++) = TEXT_COLOR_LIGHT_BLUE;
-    if (GetBoxOrPartyMonData(boxId, monId, MON_DATA_IS_EGG, NULL))
-    {
+    if (GetBoxOrPartyMonData(box, mon, MON_DATA_IS_EGG, NULL))
         return StringCopyPadded(dst, gText_EggNickname, 0, 12);
+    GetBoxOrPartyMonData(box, mon, MON_DATA_NICKNAME, dst);
+    StringGetEnd10(dst);
+    species = GetBoxOrPartyMonData(box, mon, MON_DATA_SPECIES, NULL);
+    if (box == TOTAL_BOXES_COUNT) // Party mon.
+    {
+        level = GetMonData(&gPlayerParty[mon], MON_DATA_LEVEL);
+        gender = GetMonGender(&gPlayerParty[mon]);
     }
     else
     {
-        GetBoxOrPartyMonData(boxId, monId, MON_DATA_NICKNAME, dst);
-        StringGetEnd10(dst);
-        species = GetBoxOrPartyMonData(boxId, monId, MON_DATA_SPECIES, NULL);
-        if (boxId == TOTAL_BOXES_COUNT) // Party mon.
-        {
-            level = GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL);
-            gender = GetMonGender(&gPlayerParty[monId]);
-        }
-        else
-        {
-            // Needed to match, feel free to remove.
-            boxId++;boxId--;
-            monId++;monId--;
-
-            boxMon = GetBoxedMonPtr(boxId, monId);
-            gender = GetBoxMonGender(boxMon);
-            level = GetLevelFromBoxMonExp(boxMon);
-        }
-
-        if ((species == SPECIES_NIDORAN_F || species == SPECIES_NIDORAN_M) && !StringCompare(dst, gSpeciesNames[species]))
-            gender = MON_GENDERLESS;
-
-        for (str = dst; *str != EOS; str++)
-            ;
-
-        *(str++) = EXT_CTRL_CODE_BEGIN;
-        *(str++) = EXT_CTRL_CODE_SKIP;
-        *(str++) = 60;
-
-        switch (gender)
-        {
-        default:
-            *(str++) = CHAR_SPACE;
-            break;
-        case MON_MALE:
-            *(str++) = EXT_CTRL_CODE_BEGIN;
-            *(str++) = EXT_CTRL_CODE_COLOR;
-            *(str++) = TEXT_COLOR_RED;
-            *(str++) = EXT_CTRL_CODE_BEGIN;
-            *(str++) = EXT_CTRL_CODE_SHADOW;
-            *(str++) = TEXT_COLOR_LIGHT_RED;
-            *(str++) = CHAR_MALE;
-            break;
-        case MON_FEMALE:
-            *(str++) = EXT_CTRL_CODE_BEGIN;
-            *(str++) = EXT_CTRL_CODE_COLOR;
-            *(str++) = TEXT_COLOR_GREEN;
-            *(str++) = EXT_CTRL_CODE_BEGIN;
-            *(str++) = EXT_CTRL_CODE_SHADOW;
-            *(str++) = TEXT_COLOR_LIGHT_GREEN;
-            *(str++) = CHAR_FEMALE;
-            break;
-        }
-
-        *(str++) = EXT_CTRL_CODE_BEGIN;
-        *(str++) = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
-        *(str++) = TEXT_COLOR_BLUE;
-        *(str++) = TEXT_COLOR_TRANSPARENT;
-        *(str++) = TEXT_COLOR_LIGHT_BLUE;
-        *(str++) = CHAR_SLASH;
-        *(str++) = CHAR_EXTRA_SYMBOL;
-        *(str++) = CHAR_LV_2;
-        str = ConvertIntToDecimalStringN(str, level, STR_CONV_MODE_LEFT_ALIGN, 3);
-        *(str++) = CHAR_SPACE;
-        *str = EOS;
-
-        return str;
+        boxMon = GetBoxedMonPtr(box, mon);
+        gender = GetBoxMonGender(boxMon);
+        level = GetLevelFromBoxMonExp(boxMon);
     }
+
+    if ((species == SPECIES_NIDORAN_F || species == SPECIES_NIDORAN_M) && !StringCompare(dst, gSpeciesNames[species]))
+        gender = MON_GENDERLESS;
+
+    for (str = dst; *str != EOS; str++)
+        ;
+
+    *(str++) = EXT_CTRL_CODE_BEGIN;
+    *(str++) = EXT_CTRL_CODE_SKIP;
+    *(str++) = 60;
+
+    switch (gender)
+    {
+    default:
+        *(str++) = CHAR_SPACE;
+        break;
+    case MON_MALE:
+        *(str++) = EXT_CTRL_CODE_BEGIN;
+        *(str++) = EXT_CTRL_CODE_COLOR;
+        *(str++) = TEXT_COLOR_RED;
+        *(str++) = EXT_CTRL_CODE_BEGIN;
+        *(str++) = EXT_CTRL_CODE_SHADOW;
+        *(str++) = TEXT_COLOR_LIGHT_RED;
+        *(str++) = CHAR_MALE;
+        break;
+    case MON_FEMALE:
+        *(str++) = EXT_CTRL_CODE_BEGIN;
+        *(str++) = EXT_CTRL_CODE_COLOR;
+        *(str++) = TEXT_COLOR_GREEN;
+        *(str++) = EXT_CTRL_CODE_BEGIN;
+        *(str++) = EXT_CTRL_CODE_SHADOW;
+        *(str++) = TEXT_COLOR_LIGHT_GREEN;
+        *(str++) = CHAR_FEMALE;
+        break;
+    }
+
+    *(str++) = EXT_CTRL_CODE_BEGIN;
+    *(str++) = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
+    *(str++) = TEXT_COLOR_BLUE;
+    *(str++) = TEXT_COLOR_TRANSPARENT;
+    *(str++) = TEXT_COLOR_LIGHT_BLUE;
+    *(str++) = CHAR_SLASH;
+    *(str++) = CHAR_EXTRA_SYMBOL;
+    *(str++) = CHAR_LV_2;
+    str = ConvertIntToDecimalStringN(str, level, STR_CONV_MODE_LEFT_ALIGN, 3);
+    *(str++) = CHAR_SPACE;
+    *str = EOS;
+
+    return str;
 }
 
 // Buffers the string in src to dest up to n chars. If src is less than n chars, fill with spaces
@@ -983,6 +975,8 @@ static u8 *BufferConditionMenuSpacedStringN(u8 *dst, const u8 *src, s16 n)
 void GetConditionMenuMonNameAndLocString(u8 *locationDst, u8 *nameDst, u16 boxId, u16 monId, u16 partyId, u16 numMons, bool8 excludesCancel)
 {
     u16 i;
+    u16 box = boxId;
+    u16 mon = monId;
 
     // In this and the below 2 functions, numMons is passed as the number of menu selections (which includes Cancel)
     // To indicate that the Cancel needs to be subtracted they pass an additional bool
@@ -992,21 +986,16 @@ void GetConditionMenuMonNameAndLocString(u8 *locationDst, u8 *nameDst, u16 boxId
 
     if (partyId != numMons)
     {
-        GetConditionMenuMonString(nameDst, boxId, monId);
+        GetConditionMenuMonString(nameDst, box, mon);
         locationDst[0] = EXT_CTRL_CODE_BEGIN;
         locationDst[1] = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
         locationDst[2] = TEXT_COLOR_BLUE;
         locationDst[3] = TEXT_COLOR_TRANSPARENT;
         locationDst[4] = TEXT_COLOR_LIGHT_BLUE;
-        if (boxId == TOTAL_BOXES_COUNT) // Party mon.
-        {
+        if (box == TOTAL_BOXES_COUNT) // Party mon.
             BufferConditionMenuSpacedStringN(&locationDst[5], gText_InParty, 8);
-        }
         else
-        {
-            boxId++;boxId--; // Again...Someone fix this maybe?
-            BufferConditionMenuSpacedStringN(&locationDst[5], GetBoxNamePtr(boxId), 8);
-        }
+            BufferConditionMenuSpacedStringN(&locationDst[5], GetBoxNamePtr(box), 8);
     }
     else
     {
@@ -1161,7 +1150,7 @@ static const union AnimCmd *const sAnims_ConditionSelectionIcon[] =
 // Just loads the generic data, up to the caller to load the actual sheet/pal for the specific mon
 void LoadConditionMonPicTemplate(struct SpriteSheet *sheet, struct SpriteTemplate *template, struct SpritePalette *pal)
 {
-    struct SpriteSheet dataSheet = {NULL, 0x800, TAG_CONDITION_MON};
+    struct SpriteSheet dataSheet = {NULL, MON_PIC_SIZE, TAG_CONDITION_MON};
 
     struct SpriteTemplate dataTemplate =
     {
