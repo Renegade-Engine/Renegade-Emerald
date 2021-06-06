@@ -124,8 +124,8 @@ static const struct WindowTemplate sSearchResultListMenuWindowTemplate =
     .baseBlock = 20
 };
 
-static const u8 sText_MaleSymbol[] = _("{COLOR_HIGHLIGHT_SHADOW}{LIGHT_RED}{WHITE}{GREEN}♂{COLOR_HIGHLIGHT_SHADOW}{DARK_GREY}{WHITE}{LIGHT_GREY}");
-static const u8 sText_FemaleSymbol[] = _("{COLOR_HIGHLIGHT_SHADOW}{LIGHT_GREEN}{WHITE}{BLUE}♀{COLOR_HIGHLIGHT_SHADOW}{DARK_GREY}{WHITE}{LIGHT_GREY}");
+static const u8 sText_MaleSymbol[] = _("{COLOR_HIGHLIGHT_SHADOW}{LIGHT_RED}{WHITE}{GREEN}♂{COLOR_HIGHLIGHT_SHADOW}{DARK_GRAY}{WHITE}{LIGHT_GRAY}");
+static const u8 sText_FemaleSymbol[] = _("{COLOR_HIGHLIGHT_SHADOW}{LIGHT_GREEN}{WHITE}{BLUE}♀{COLOR_HIGHLIGHT_SHADOW}{DARK_GRAY}{WHITE}{LIGHT_GRAY}");
 static const u8 sText_NoGenderSymbol[] = _("{UNK_SPACER}");
 
 bool32 PokenavCallback_Init_ConditionSearch(void)
@@ -184,26 +184,27 @@ static u32 HandleConditionSearchInput(struct PokenavSub7 *structPtr)
 {
     if (JOY_REPEAT(DPAD_UP))
         return CONDITION_SEARCH_FUNC_MOVE_UP;
-    if (JOY_REPEAT(DPAD_DOWN))
+    else if (JOY_REPEAT(DPAD_DOWN))
         return CONDITION_SEARCH_FUNC_MOVE_DOWN;
-    if (JOY_NEW(DPAD_LEFT))
+    else if (JOY_NEW(DPAD_LEFT))
         return CONDITION_SEARCH_FUNC_PAGE_UP;
-    if (JOY_NEW(DPAD_RIGHT))
+    else if (JOY_NEW(DPAD_RIGHT))
         return CONDITION_SEARCH_FUNC_PAGE_DOWN;
-    if (JOY_NEW(B_BUTTON))
+    else if (JOY_NEW(B_BUTTON))
     {
         structPtr->isPartyCondition = 0;
         structPtr->callback = ReturnToConditionSearchList;
         return CONDITION_SEARCH_FUNC_EXIT;
     }
-    if (JOY_NEW(A_BUTTON))
+    else if (JOY_NEW(A_BUTTON))
     {
         structPtr->monList->currIndex = GetSelectedPokenavListIndex();
         structPtr->isPartyCondition = 1;
         structPtr->callback = OpenConditionGraphFromSearchList;
         return CONDITION_SEARCH_FUNC_SELECT_MON;
     }
-    return CONDITION_SEARCH_FUNC_NONE;
+    else
+        return CONDITION_SEARCH_FUNC_NONE;
 }
 
 static u32 ReturnToConditionSearchList(struct PokenavSub7 *structPtr)
@@ -418,7 +419,7 @@ static u32 LoopedTask_OpenConditionSearchResults(s32 state)
     switch (state)
     {
     case 0:
-        InitBgTemplates(sConditionSearchResultBgTemplates, NELEMS(sConditionSearchResultBgTemplates));
+        InitBgTemplates(sConditionSearchResultBgTemplates, ARRAY_COUNT(sConditionSearchResultBgTemplates));
         DecompressAndCopyTileDataToVram(1, sConditionSearchResultTiles, 0, 0, 0);
         SetBgTilemapBuffer(1, searchList->buff);
         CopyToBgTilemapBuffer(1, sConditionSearchResultTilemap, 0, 0);

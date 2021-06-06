@@ -16,6 +16,7 @@
 #include "task.h"
 #include "trig.h"
 #include "util.h"
+#include "data.h"
 #include "constants/items.h"
 #include "constants/moves.h"
 #include "constants/songs.h"
@@ -48,7 +49,7 @@ enum {
     SHINY_STAR_DIAGONAL,
 };
 
-static void sub_8170660(u8);
+static void AnimTask_UnusedLevelUpHealthBox_Step(u8);
 static void AnimTask_FlashHealthboxOnLevelUp_Step(u8);
 static void AnimTask_ThrowBall_Step(u8);
 static void SpriteCB_Ball_Throw(struct Sprite *);
@@ -98,6 +99,7 @@ static void DiveBallOpenParticleAnimation(u8);
 static void RepeatBallOpenParticleAnimation(u8);
 static void TimerBallOpenParticleAnimation(u8);
 static void PremierBallOpenParticleAnimation(u8);
+static void CB_CriticalCaptureThrownBallMovement(struct Sprite *sprite);
 static void SpriteCB_PokeBlock_Throw(struct Sprite *);
 
 struct CaptureStar
@@ -429,9 +431,12 @@ static const struct SpriteTemplate sSafariRockSpriteTemplate =
 extern const struct SpriteTemplate gWishStarSpriteTemplate;
 extern const struct SpriteTemplate gMiniTwinklingStarSpriteTemplate;
 
-void unref_sub_8170478(u8 taskId)
+// This is an unused function, but it seems likely that it was
+// intended to be an additional effect during the level-up animation.
+// It is an upward blue gradient effect on the mon's healthbox.
+void AnimTask_UnusedLevelUpHealthBox(u8 taskId)
 {
-    struct BattleAnimBgData unknownStruct;
+    struct BattleAnimBgData animBgData;
     u8 healthBoxSpriteId;
     u8 battler;
     u8 spriteId1, spriteId2, spriteId3, spriteId4;
@@ -464,20 +469,20 @@ void unref_sub_8170478(u8 taskId)
     gSprites[spriteId3].callback = SpriteCallbackDummy;
     gSprites[spriteId4].callback = SpriteCallbackDummy;
 
-    sub_80A6B30(&unknownStruct);
-    AnimLoadCompressedBgTilemap(unknownStruct.bgId, gUnknown_08C2EA9C);
-    AnimLoadCompressedBgGfx(unknownStruct.bgId, gUnknown_08C2EA50, unknownStruct.tilesOffset);
-    LoadCompressedPalette(gCureBubblesPal, unknownStruct.paletteId << 4, 32);
+    GetBattleAnimBg1Data(&animBgData);
+    AnimLoadCompressedBgTilemap(animBgData.bgId, UnusedLevelupAnimationTilemap);
+    AnimLoadCompressedBgGfx(animBgData.bgId, UnusedLevelupAnimationGfx, animBgData.tilesOffset);
+    LoadCompressedPalette(gCureBubblesPal, animBgData.paletteId << 4, 32);
 
     gBattle_BG1_X = -gSprites[spriteId3].pos1.x + 32;
     gBattle_BG1_Y = -gSprites[spriteId3].pos1.y - 32;
     gTasks[taskId].data[1] = 640;
     gTasks[taskId].data[0] = spriteId3;
     gTasks[taskId].data[2] = spriteId4;
-    gTasks[taskId].func = sub_8170660;
+    gTasks[taskId].func = AnimTask_UnusedLevelUpHealthBox_Step;
 }
 
-static void sub_8170660(u8 taskId)
+static void AnimTask_UnusedLevelUpHealthBox_Step(u8 taskId)
 {
     u8 spriteId1, spriteId2;
     u8 battler;
@@ -511,7 +516,7 @@ static void sub_8170660(u8 taskId)
             SetGpuReg(REG_OFFSET_BLDALPHA, BLDALPHA_BLEND(gTasks[taskId].data[12], 16 - gTasks[taskId].data[12]));
             if (gTasks[taskId].data[12] == 0)
             {
-                sub_80A477C(0);
+                ResetBattleAnimBg(0);
                 gBattle_WIN0H = 0;
                 gBattle_WIN0V = 0;
                 SetGpuReg(REG_OFFSET_WININ, WININ_WIN0_BG_ALL | WININ_WIN0_OBJ | WININ_WIN0_CLR | WININ_WIN1_BG_ALL | WININ_WIN1_OBJ | WININ_WIN1_CLR);
@@ -686,7 +691,7 @@ void AnimTask_SwitchOutBallEffect(u8 taskId)
         priority = gSprites[spriteId].oam.priority;
         subpriority = gSprites[spriteId].subpriority;
         gTasks[taskId].data[10] = AnimateBallOpenParticles(x, y + 32, priority, subpriority, ballId);
-        selectedPalettes = sub_80A75AC(1, 0, 0, 0, 0, 0, 0);
+        selectedPalettes = GetBattleBgPalettesMask(1, 0, 0, 0, 0, 0, 0);
         gTasks[taskId].data[11] = LaunchBallFadeMonTask(FALSE, gBattleAnimAttacker, selectedPalettes, ballId);
         gTasks[taskId].data[0]++;
         break;
@@ -985,17 +990,17 @@ static void SpriteCB_Ball_MonShrink_Step(struct Sprite *sprite)
 
 static void SpriteCB_Ball_Bounce(struct Sprite *sprite)
 {
-    s16 phase;
-
     if (sprite->animEnded)
     {
         sprite->sState = 0;
         sprite->sAmplitude = 40;
         sprite->sPhase = 0;
-        phase = 0;
-        sprite->pos1.y += Cos(phase, 40);
-        sprite->pos2.y = -Cos(phase, sprite->sAmplitude);
-        sprite->callback = SpriteCB_Ball_Bounce_Step;
+        sprite->pos1.y += Cos(0, 40);
+        sprite->pos2.y = -Cos(0, sprite->sAmplitude);
+        if (IsCriticalCapture())
+            sprite->callback = CB_CriticalCaptureThrownBallMovement;
+        else
+            sprite->callback = SpriteCB_Ball_Bounce_Step;
     }
 }
 
@@ -1135,8 +1140,8 @@ static void SpriteCB_Ball_Wobble_Step(struct Sprite *sprite)
 
     switch (STATE(sprite->sState))
     {
-    case BALL_ROLL_1: 
-        // Rolling effect: every frame in the rotation, the sprite shifts 176/256 of a pixel. 
+    case BALL_ROLL_1:
+        // Rolling effect: every frame in the rotation, the sprite shifts 176/256 of a pixel.
         if (gBattleSpritesDataPtr->animationData->ballSubpx > 255)
         {
             sprite->pos2.x += sprite->sDirection;
@@ -1228,22 +1233,38 @@ static void SpriteCB_Ball_Wobble_Step(struct Sprite *sprite)
     case BALL_NEXT_MOVE:
         SHAKE_INC(sprite->sState);
         shakes = SHAKES(sprite->sState);
-        if (shakes == gBattleSpritesDataPtr->animationData->ballThrowCaseId)
+        if (IsCriticalCapture())
         {
-            sprite->affineAnimPaused = TRUE;
-            sprite->callback = SpriteCB_Ball_Release;
-        }
-        else
-        {
-            if (gBattleSpritesDataPtr->animationData->ballThrowCaseId == BALL_3_SHAKES_SUCCESS && shakes == 3)
+            if (gBattleSpritesDataPtr->animationData->criticalCaptureSuccess)
             {
                 sprite->callback = SpriteCB_Ball_Capture;
                 sprite->affineAnimPaused = TRUE;
             }
             else
             {
-                sprite->sState++; // BALL_WAIT_NEXT_SHAKE
                 sprite->affineAnimPaused = TRUE;
+                sprite->callback = SpriteCB_Ball_Release;
+            }
+        }
+        else
+        {
+            if (shakes == gBattleSpritesDataPtr->animationData->ballThrowCaseId)
+            {
+                sprite->affineAnimPaused = TRUE;
+                sprite->callback = SpriteCB_Ball_Release;
+            }
+            else
+            {
+                if (gBattleSpritesDataPtr->animationData->ballThrowCaseId == BALL_3_SHAKES_SUCCESS && shakes == 3)
+                {
+                    sprite->callback = SpriteCB_Ball_Capture;
+                    sprite->affineAnimPaused = TRUE;
+                }
+                else
+                {
+                    sprite->sState++; // BALL_WAIT_NEXT_SHAKE
+                    sprite->affineAnimPaused = TRUE;
+                }
             }
         }
         break;
@@ -1315,7 +1336,7 @@ static void SpriteCB_Ball_Capture_Step(struct Sprite *sprite)
     else if (sprite->sTimer == 95)
     {
         gDoingBattleAnim = FALSE;
-        UpdateOamPriorityInAllHealthboxes(1);
+        UpdateOamPriorityInAllHealthboxes(1, FALSE);
         m4aMPlayAllStop();
         PlaySE(MUS_RG_CAUGHT_INTRO);
     }
@@ -1468,7 +1489,7 @@ static void SpriteCB_Ball_Release_Step(struct Sprite *sprite)
 
     // Animate Pokémon emerging from Poké Ball
     gSprites[gBattlerSpriteIds[gBattleAnimTarget]].invisible = FALSE;
-    StartSpriteAffineAnim(&gSprites[gBattlerSpriteIds[gBattleAnimTarget]], 1);
+    StartSpriteAffineAnim(&gSprites[gBattlerSpriteIds[gBattleAnimTarget]], BATTLER_AFFINE_EMERGE);
     AnimateSprite(&gSprites[gBattlerSpriteIds[gBattleAnimTarget]]);
     gSprites[gBattlerSpriteIds[gBattleAnimTarget]].sOffsetY = 4096;
 }
@@ -1482,7 +1503,7 @@ static void SpriteCB_Ball_Release_Wait(struct Sprite *sprite)
 
     if (gSprites[gBattlerSpriteIds[gBattleAnimTarget]].affineAnimEnded)
     {
-        StartSpriteAffineAnim(&gSprites[gBattlerSpriteIds[gBattleAnimTarget]], 0);
+        StartSpriteAffineAnim(&gSprites[gBattlerSpriteIds[gBattleAnimTarget]], BATTLER_AFFINE_NORMAL);
         released = TRUE;
     }
     else
@@ -1498,7 +1519,7 @@ static void SpriteCB_Ball_Release_Wait(struct Sprite *sprite)
         sprite->sFrame = 0;
         sprite->callback = DestroySpriteAfterOneFrame;
         gDoingBattleAnim = 0;
-        UpdateOamPriorityInAllHealthboxes(1);
+        UpdateOamPriorityInAllHealthboxes(1, FALSE);
     }
 }
 
@@ -1534,13 +1555,13 @@ static void SpriteCB_Ball_Block_Step(struct Sprite *sprite)
     sprite->sDy = (sprite->sDy + 0x800) & 0xFF;
     sprite->sDx = (sprite->sDx + 0x680) & 0xFF;
 
-    if (sprite->pos1.y + sprite->pos2.y > 160
+    if (sprite->pos1.y + sprite->pos2.y > DISPLAY_HEIGHT
      || sprite->pos1.x + sprite->pos2.x < -8)
     {
         sprite->sFrame = 0;
         sprite->callback = DestroySpriteAfterOneFrame;
         gDoingBattleAnim = 0;
-        UpdateOamPriorityInAllHealthboxes(1);
+        UpdateOamPriorityInAllHealthboxes(1, FALSE);
     }
 }
 
@@ -1551,8 +1572,6 @@ static void SpriteCB_Ball_Block_Step(struct Sprite *sprite)
 
 static void LoadBallParticleGfx(u8 ballId)
 {
-    u8 taskId;
-
     if (GetSpriteTileStartByTag(sBallParticleSpriteSheets[ballId].tag) == 0xFFFF)
     {
         LoadCompressedSpriteSheetUsingHeap(&sBallParticleSpriteSheets[ballId]);
@@ -2181,7 +2200,7 @@ void AnimTask_SubstituteFadeToInvisible(u8 taskId)
         break;
     case 2:
         spriteId = gBattlerSpriteIds[gBattleAnimAttacker];
-        RequestDma3Fill(0, (void *)OBJ_VRAM0 + gSprites[spriteId].oam.tileNum * TILE_SIZE_4BPP, 0x800, 1);
+        RequestDma3Fill(0, (void *)OBJ_VRAM0 + gSprites[spriteId].oam.tileNum * TILE_SIZE_4BPP, MON_PIC_SIZE, 1);
         ClearBehindSubstituteBit(gBattleAnimAttacker);
         DestroyAnimVisualTask(taskId);
         break;
@@ -2266,7 +2285,7 @@ static void Task_ShinyStars(u8 taskId)
     }
 
     // Wait until the ball particles have despawned
-    if (gBattleSpritesDataPtr->animationData->numBallParticles) 
+    if (gBattleSpritesDataPtr->animationData->numBallParticles)
         return;
 
     timer = gTasks[taskId].tStarTimer++;
@@ -2438,7 +2457,7 @@ static void SpriteCB_PokeBlock_Arc(struct Sprite *sprite)
 }
 
 // Destroy after end of player animation
-static void SpriteCB_ThrowPokeBlock_Free(struct Sprite *sprite) 
+static void SpriteCB_ThrowPokeBlock_Free(struct Sprite *sprite)
 {
     if (gSprites[gBattlerSpriteIds[gBattleAnimAttacker]].animEnded)
     {
@@ -2477,6 +2496,8 @@ void AnimTask_GetTrappedMoveAnimId(u8 taskId)
         gBattleAnimArgs[0] = TRAP_ANIM_CLAMP;
     else if (gBattleSpritesDataPtr->animationData->animArg == MOVE_SAND_TOMB)
         gBattleAnimArgs[0] = TRAP_ANIM_SAND_TOMB;
+    else if (gBattleSpritesDataPtr->animationData->animArg == MOVE_INFESTATION)
+        gBattleAnimArgs[0] = TRAP_ANIM_INFESTATION;
     else
         gBattleAnimArgs[0] = TRAP_ANIM_BIND;
 
@@ -2489,3 +2510,53 @@ void AnimTask_GetBattlersFromArg(u8 taskId)
     gBattleAnimTarget = gBattleSpritesDataPtr->animationData->animArg >> 8;
     DestroyAnimVisualTask(taskId);
 }
+
+bool32 IsCriticalCapture(void)
+{
+    return gBattleSpritesDataPtr->animationData->isCriticalCapture;
+}
+
+static void CB_CriticalCaptureThrownBallMovement(struct Sprite *sprite)
+{
+    bool8 lastBounce = FALSE;
+    u8 maxBounces = 6;
+    int bounceCount = sprite->data[3] >> 8;
+
+    if (bounceCount == 0)
+        PlaySE(SE_BALL);
+
+    switch (sprite->data[3] & 0xFF)
+    {
+    case 0:
+        if (bounceCount < 3)
+            sprite->pos2.x++;
+
+        if (++sprite->data[5] >= 3)
+            sprite->data[3] += 257;
+
+        break;
+    case 1:
+        if (bounceCount < 3 || sprite->pos2.x != 0)
+            sprite->pos2.x--;
+
+        if (--sprite->data[5] <= 0)
+        {
+            sprite->data[5] = 0;
+            sprite->data[3] &= -0x100;
+        }
+
+        if (bounceCount >= maxBounces)
+            lastBounce = TRUE;
+
+        break;
+    }
+
+    if (lastBounce)
+    {
+        sprite->data[3] = 0;
+        sprite->data[4] = 40;   //starting max height
+        sprite->data[5] = 0;
+        sprite->callback = SpriteCB_Ball_Bounce_Step;
+    }
+}
+

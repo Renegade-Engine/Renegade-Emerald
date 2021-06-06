@@ -312,7 +312,7 @@ static void ListMenuDummyTask(u8 taskId)
 
 }
 
-u32 DoMysteryGiftListMenu(const struct WindowTemplate *windowTemplate, const struct ListMenuTemplate *listMenuTemplate, u8 arg2, u16 tileNum, u16 palNum)
+s32 DoMysteryGiftListMenu(const struct WindowTemplate *windowTemplate, const struct ListMenuTemplate *listMenuTemplate, u8 arg2, u16 tileNum, u16 palNum)
 {
     switch (sMysteryGiftLinkMenu.state)
     {
@@ -439,12 +439,14 @@ s32 ListMenu_ProcessInput(u8 listTaskId)
             rightButton = FALSE;
             break;
         case LIST_MULTIPLE_SCROLL_DPAD:
-            leftButton = JOY_REPEAT(DPAD_LEFT);
-            rightButton = JOY_REPEAT(DPAD_RIGHT);
+            // note: JOY_REPEAT won't match here
+            leftButton = gMain.newAndRepeatedKeys & DPAD_LEFT;
+            rightButton = gMain.newAndRepeatedKeys & DPAD_RIGHT;
             break;
         case LIST_MULTIPLE_SCROLL_L_R:
-            leftButton = JOY_REPEAT(L_BUTTON);
-            rightButton = JOY_REPEAT(R_BUTTON);
+            // same as above
+            leftButton = gMain.newAndRepeatedKeys & L_BUTTON;
+            rightButton = gMain.newAndRepeatedKeys & R_BUTTON;
             break;
         }
 
@@ -464,8 +466,6 @@ s32 ListMenu_ProcessInput(u8 listTaskId)
         }
     }
 }
-
-#define TASK_NONE 0xFF
 
 void DestroyListMenuTask(u8 listTaskId, u16 *scrollOffset, u16 *selectedRow)
 {
@@ -679,7 +679,7 @@ static u8 ListMenuAddCursorObject(struct ListMenu *list, u32 cursorKind)
     struct CursorStruct cursor;
 
     cursor.left = 0;
-    cursor.top = 160;
+    cursor.top = DISPLAY_HEIGHT;
     cursor.rowWidth = GetWindowAttribute(list->template.windowId, WINDOW_WIDTH) * 8 + 2;
     cursor.rowHeight = GetFontAttribute(list->template.fontId, FONTATTR_MAX_LETTER_HEIGHT) + 2;
     cursor.tileTag = 0x4000;
@@ -1257,17 +1257,17 @@ void ListMenuSetUpRedOutlineCursorSpriteOamTable(u16 rowWidth, u16 rowHeight, st
     s32 i, j, id = 0;
 
     subsprites[id] = sSubsprite_RedOutline1;
-    subsprites[id].x = -120;
-    subsprites[id].y = -120;
+    subsprites[id].x = 136;
+    subsprites[id].y = 136;
     id++;
 
     subsprites[id] = sSubsprite_RedOutline2;
     subsprites[id].x = rowWidth + 128;
-    subsprites[id].y = -120;
+    subsprites[id].y = 136;
     id++;
 
     subsprites[id] = sSubsprite_RedOutline7;
-    subsprites[id].x = -120;
+    subsprites[id].x = 136;
     subsprites[id].y = rowHeight + 128;
     id++;
 
@@ -1297,7 +1297,7 @@ void ListMenuSetUpRedOutlineCursorSpriteOamTable(u16 rowWidth, u16 rowHeight, st
         for (j = 8; j < rowHeight - 8; j += 8)
         {
             subsprites[id] = sSubsprite_RedOutline4;
-            subsprites[id].x = -120;
+            subsprites[id].x = 136;
             subsprites[id].y = j - 120;
             id++;
 

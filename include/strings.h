@@ -982,7 +982,8 @@ extern const u8 gText_RibbonsVar1[];
 extern const u8 gText_OneDash[];
 extern const u8 gText_TwoDashes[];
 
-extern const u8 *const gReturnToXStringsTable2[];
+extern const u8 *const gBagMenu_ReturnToStrings[];
+extern const u8 *const gPyramidBagMenu_ReturnToStrings[];
 
 extern const u8 gText_NumPlayerLink[];
 extern const u8 gText_ConfirmLinkWhenPlayersReady[];
@@ -2847,6 +2848,8 @@ extern const u8 gText_Lower[];
 extern const u8 gText_Symbols[];
 extern const u8 gText_Register2[];
 extern const u8 gText_Exit2[];
+extern const u8 gOtherText_ExpShareOn[];
+extern const u8 gOtherText_ExpShareOff[];
 
 // Dodrio Berry Picking
 extern const u8 gText_BerryPickingRecords[];
@@ -2904,7 +2907,7 @@ extern const u8 gText_CrushingResults[];
 extern const u8 gText_BerryCrush2[];
 extern const u8 gText_PressingSpeedRankings[];
 extern const u8 gText_Var1Players[];
-extern const u8 gText_ReadyToBerryCrush[];
+extern const u8 gText_ReadyPickBerry[];
 extern const u8 gText_WaitForAllChooseBerry[];
 extern const u8 gText_EndedWithXUnitsPowder[];
 extern const u8 gText_RecordingGameResults[];
@@ -2987,5 +2990,32 @@ extern const u8 gText_Beauty3[];
 extern const u8 gText_SavingDontTurnOff2[];
 extern const u8 gText_BlenderMaxSpeedRecord[];
 extern const u8 gText_234Players[];
+
+// Battle Factory Screen
+extern const u8 gText_RentalPkmn2[];
+extern const u8 gText_SelectFirstPkmn[];
+extern const u8 gText_SelectSecondPkmn[];
+extern const u8 gText_SelectThirdPkmn[];
+extern const u8 gText_TheseThreePkmnOkay[];
+extern const u8 gText_CantSelectSamePkmn[];
+extern const u8 gText_Summary[];
+extern const u8 gText_Rechoose[];
+extern const u8 gText_Deselect[];
+extern const u8 gText_Rent[];
+extern const u8 gText_Others2[];
+extern const u8 gText_Yes2[];
+extern const u8 gText_Yes3[];
+extern const u8 gText_No2[];
+extern const u8 gText_No3[];
+extern const u8 gText_QuitSwapping[];
+extern const u8 gText_AcceptThisPkmn[];
+extern const u8 gText_SelectPkmnToAccept[];
+extern const u8 gText_SelectPkmnToSwap[];
+extern const u8 gText_PkmnSwap[];
+extern const u8 gText_Swap[];
+extern const u8 gText_Summary2[];
+extern const u8 gText_PkmnForSwap[];
+extern const u8 gText_SamePkmnInPartyAlready[];
+extern const u8 gText_Cancel3[];
 
 #endif // GUARD_STRINGS_H

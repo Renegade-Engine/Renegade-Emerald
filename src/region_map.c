@@ -131,7 +131,11 @@ static const u16 sRegionMap_SpecialPlaceLocations[][2] =
 {
     {MAPSEC_UNDERWATER_105,             MAPSEC_ROUTE_105},
     {MAPSEC_UNDERWATER_124,             MAPSEC_ROUTE_124},
+    #ifdef BUGFIX
+    {MAPSEC_UNDERWATER_125,             MAPSEC_ROUTE_125},
+    #else
     {MAPSEC_UNDERWATER_125,             MAPSEC_ROUTE_129}, // BUG: Map will incorrectly display the name of Route 129 when diving on Route 125 (for Marine Cave only)
+    #endif
     {MAPSEC_UNDERWATER_126,             MAPSEC_ROUTE_126},
     {MAPSEC_UNDERWATER_127,             MAPSEC_ROUTE_127},
     {MAPSEC_UNDERWATER_128,             MAPSEC_ROUTE_128},
@@ -1673,7 +1677,7 @@ void CB2_OpenFlyMap(void)
         break;
     case 1:
         ResetBgsAndClearDma3BusyFlags(0);
-        InitBgsFromTemplates(1, sFlyMapBgTemplates, 3);
+        InitBgsFromTemplates(1, sFlyMapBgTemplates, ARRAY_COUNT(sFlyMapBgTemplates));
         gMain.state++;
         break;
     case 2:
@@ -1717,7 +1721,7 @@ void CB2_OpenFlyMap(void)
         gMain.state++;
         break;
     case 9:
-        BlendPalettes(-1, 16, 0);
+        BlendPalettes(PALETTES_ALL, 16, 0);
         SetVBlankCallback(VBlankCB_FlyMap);
         gMain.state++;
         break;
@@ -1932,7 +1936,7 @@ static void CB_FadeInFlyMap(void)
     switch (sFlyMap->state)
     {
     case 0:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 16, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 16, 0, RGB_BLACK);
         sFlyMap->state++;
         break;
     case 1:
@@ -1979,7 +1983,7 @@ static void CB_ExitFlyMap(void)
     switch (sFlyMap->state)
     {
     case 0:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 16, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 16, RGB_BLACK);
         sFlyMap->state++;
         break;
     case 1:

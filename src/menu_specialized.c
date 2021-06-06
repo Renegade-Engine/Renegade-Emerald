@@ -23,7 +23,6 @@
 #include "text_window.h"
 #include "trig.h"
 #include "window.h"
-#include "constants/berry.h"
 #include "constants/songs.h"
 #include "gba/io_reg.h"
 
@@ -74,7 +73,7 @@ static const struct WindowTemplate sUnknown_086253E8[] =
 
 static const u8 sPlayerNameTextColors[] =
 {
-    TEXT_COLOR_WHITE, TEXT_COLOR_DARK_GREY, TEXT_COLOR_LIGHT_GREY
+    TEXT_COLOR_WHITE, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_LIGHT_GRAY
 };
 
 static const u8 sEmptyItemName[] = _("");
@@ -217,14 +216,14 @@ bool8 sub_81D1C44(u8 count)
         return FALSE;
 
     for (i = 0; i < ARRAY_COUNT(sUnknown_0203CF48); i++)
-        sUnknown_0203CF48[i] = 0xFF;
+        sUnknown_0203CF48[i] = WINDOW_NONE;
 
     return TRUE;
 }
 
 u8 sub_81D1C84(u8 a0)
 {
-    if (sUnknown_0203CF48[a0] == 0xFF)
+    if (sUnknown_0203CF48[a0] == WINDOW_NONE)
     {
         if (a0 == 2)
         {
@@ -246,10 +245,10 @@ void sub_81D1D04(u8 a0)
     ClearStdWindowAndFrameToTransparent(sUnknown_0203CF48[a0], 0);
     ClearWindowTilemap(sUnknown_0203CF48[a0]);
     RemoveWindow(sUnknown_0203CF48[a0]);
-    sUnknown_0203CF48[a0] = 0xFF;
+    sUnknown_0203CF48[a0] = WINDOW_NONE;
 }
 
-static u8 sub_81D1D34(u8 a0) // unused
+static u8 sub_81D1D34(u8 a0)
 {
     return sUnknown_0203CF48[a0];
 }
@@ -262,10 +261,10 @@ static void sub_81D1D44(u8 windowId, s32 itemId, u8 y)
     if (itemId == LIST_CANCEL)
         return;
 
-    StringCopy(buffer, gSaveBlock1Ptr->mail[6 + itemId].playerName);
-    sub_81DB52C(buffer);
+    StringCopy(buffer, gSaveBlock1Ptr->mail[PARTY_SIZE + itemId].playerName);
+    ConvertInternationalPlayerName(buffer);
     length = StringLength(buffer);
-    if (length <= 5)
+    if (length < PLAYER_NAME_LENGTH - 1)
         ConvertInternationalString(buffer, LANGUAGE_JAPANESE);
     AddTextPrinterParameterized4(windowId, 1, 8, y, 0, 0, sPlayerNameTextColors, -1, buffer);
 }
@@ -311,7 +310,7 @@ static void sub_81D1E7C(s32 itemIndex, bool8 onInit, struct ListMenu *list)
 
 void sub_81D1E90(struct PlayerPCItemPageStruct *page)
 {
-    page->scrollIndicatorId = AddScrollIndicatorArrowPairParameterized(2, 0xC8, 12, 0x94, page->count - page->pageItems + 1, 0x6E, 0x6E, &page->itemsAbove);
+    page->scrollIndicatorTaskId = AddScrollIndicatorArrowPairParameterized(2, 0xC8, 12, 0x94, page->count - page->pageItems + 1, 0x6E, 0x6E, &page->itemsAbove);
 }
 
 void sub_81D1EC0(void)
@@ -841,7 +840,7 @@ void MoveRelearnerPrintText(u8 *str)
     FillWindowPixelBuffer(3, PIXEL_FILL(1));
     gTextFlags.canABSpeedUpPrint = TRUE;
     speed = GetPlayerTextSpeedDelay();
-    AddTextPrinterParameterized2(3, 1, str, speed, NULL, TEXT_COLOR_DARK_GREY, TEXT_COLOR_WHITE, 3);
+    AddTextPrinterParameterized2(3, 1, str, speed, NULL, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_WHITE, 3);
 }
 
 bool16 MoveRelearnerRunTextPrinters(void)
@@ -880,34 +879,30 @@ s32 GetBoxOrPartyMonData(u16 boxId, u16 monId, s32 request, u8 *dst)
 // Gets the name/gender/level string for the condition menu
 static u8 *GetConditionMenuMonString(u8 *dst, u16 boxId, u16 monId)
 {
-    u16 species, level, gender;
+    u16 box, mon, species, level, gender;
     struct BoxPokemon *boxMon;
     u8 *str;
 
+    box = boxId;
+    mon = monId;
     *(dst++) = EXT_CTRL_CODE_BEGIN;
     *(dst++) = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
     *(dst++) = TEXT_COLOR_BLUE;
     *(dst++) = TEXT_COLOR_TRANSPARENT;
     *(dst++) = TEXT_COLOR_LIGHT_BLUE;
-    if (GetBoxOrPartyMonData(boxId, monId, MON_DATA_IS_EGG, NULL))
-    {
+    if (GetBoxOrPartyMonData(box, mon, MON_DATA_IS_EGG, NULL))
         return StringCopyPadded(dst, gText_EggNickname, 0, 12);
-    }
-    GetBoxOrPartyMonData(boxId, monId, MON_DATA_NICKNAME, dst);
+    GetBoxOrPartyMonData(box, mon, MON_DATA_NICKNAME, dst);
     StringGetEnd10(dst);
-    species = GetBoxOrPartyMonData(boxId, monId, MON_DATA_SPECIES, NULL);
-    if (boxId == TOTAL_BOXES_COUNT) // Party mon.
+    species = GetBoxOrPartyMonData(box, mon, MON_DATA_SPECIES, NULL);
+    if (box == TOTAL_BOXES_COUNT) // Party mon.
     {
-        level = GetMonData(&gPlayerParty[monId], MON_DATA_LEVEL);
-        gender = GetMonGender(&gPlayerParty[monId]);
+        level = GetMonData(&gPlayerParty[mon], MON_DATA_LEVEL);
+        gender = GetMonGender(&gPlayerParty[mon]);
     }
     else
     {
-        // Needed to match, feel free to remove.
-        boxId++, boxId--;
-        monId++, monId--;
-
-        boxMon = GetBoxedMonPtr(boxId, monId);
+        boxMon = GetBoxedMonPtr(box, mon);
         gender = GetBoxMonGender(boxMon);
         level = GetLevelFromBoxMonExp(boxMon);
     }
@@ -980,6 +975,8 @@ static u8 *BufferConditionMenuSpacedStringN(u8 *dst, const u8 *src, s16 n)
 void GetConditionMenuMonNameAndLocString(u8 *locationDst, u8 *nameDst, u16 boxId, u16 monId, u16 partyId, u16 numMons, bool8 excludesCancel)
 {
     u16 i;
+    u16 box = boxId;
+    u16 mon = monId;
 
     // In this and the below 2 functions, numMons is passed as the number of menu selections (which includes Cancel)
     // To indicate that the Cancel needs to be subtracted they pass an additional bool
@@ -989,21 +986,16 @@ void GetConditionMenuMonNameAndLocString(u8 *locationDst, u8 *nameDst, u16 boxId
 
     if (partyId != numMons)
     {
-        GetConditionMenuMonString(nameDst, boxId, monId);
+        GetConditionMenuMonString(nameDst, box, mon);
         locationDst[0] = EXT_CTRL_CODE_BEGIN;
         locationDst[1] = EXT_CTRL_CODE_COLOR_HIGHLIGHT_SHADOW;
         locationDst[2] = TEXT_COLOR_BLUE;
         locationDst[3] = TEXT_COLOR_TRANSPARENT;
         locationDst[4] = TEXT_COLOR_LIGHT_BLUE;
-        if (boxId == TOTAL_BOXES_COUNT) // Party mon.
-        {
+        if (box == TOTAL_BOXES_COUNT) // Party mon.
             BufferConditionMenuSpacedStringN(&locationDst[5], gText_InParty, 8);
-        }
         else
-        {
-            boxId++;boxId--; // Again...Someone fix this maybe?
-            BufferConditionMenuSpacedStringN(&locationDst[5], GetBoxNamePtr(boxId), 8);
-        }
+            BufferConditionMenuSpacedStringN(&locationDst[5], GetBoxNamePtr(box), 8);
     }
     else
     {
@@ -1158,7 +1150,7 @@ static const union AnimCmd *const sAnims_ConditionSelectionIcon[] =
 // Just loads the generic data, up to the caller to load the actual sheet/pal for the specific mon
 void LoadConditionMonPicTemplate(struct SpriteSheet *sheet, struct SpriteTemplate *template, struct SpritePalette *pal)
 {
-    struct SpriteSheet dataSheet = {NULL, 0x800, TAG_CONDITION_MON};
+    struct SpriteSheet dataSheet = {NULL, MON_PIC_SIZE, TAG_CONDITION_MON};
 
     struct SpriteTemplate dataTemplate =
     {
@@ -1494,6 +1486,58 @@ static const u8 *const sLvlUpStatStrings[NUM_STATS] =
     gText_Speed
 };
 
+void DrawGiveEVsWindowPg1(u16 windowId, u8 cursorPos, u16 *currStats, u8 bgClr, u8 fgClr, u8 shadowClr)
+{
+    u16 i, numDigits, x;
+    s16 stats[NUM_STATS];
+    u8 text[12];
+    u8 color[3];
+
+    FillWindowPixelBuffer(windowId, PIXEL_FILL(bgClr));
+
+    stats[0] = currStats[STAT_HP];
+    stats[1] = currStats[STAT_ATK];
+    stats[2] = currStats[STAT_DEF];
+    stats[3] = currStats[STAT_SPATK];
+    stats[4] = currStats[STAT_SPDEF];
+    stats[5] = currStats[STAT_SPEED];
+
+    color[0] = bgClr;
+    color[1] = fgClr;
+    color[2] = shadowClr;
+
+    for (i = 0; i < NUM_STATS; i++)
+    {
+        if (cursorPos < NUM_STATS)
+            color[1] = (i == cursorPos) ? fgClr : shadowClr;
+        if (stats[i] > 99)
+            numDigits = 3;
+        else if (stats[i] > 9)
+            numDigits = 2;
+        else
+            numDigits = 1;
+
+        ConvertIntToDecimalStringN(text, stats[i], STR_CONV_MODE_LEFT_ALIGN, numDigits);
+        x = 6 * (4 - numDigits);
+
+        AddTextPrinterParameterized3(windowId,
+                                     1,
+                                     0,
+                                     15 * i,
+                                     color,
+                                     -1,
+                                     sLvlUpStatStrings[i]);
+
+        AddTextPrinterParameterized3(windowId,
+                                     1,
+                                     56 + x,
+                                     15 * i,
+                                     color,
+                                     -1,
+                                     text);
+    }
+}
+
 void DrawLevelUpWindowPg1(u16 windowId, u16 *statsBefore, u16 *statsAfter, u8 bgClr, u8 fgClr, u8 shadowClr)
 {
     u16 i, x;
@@ -1607,4 +1651,14 @@ void GetMonLevelUpWindowStats(struct Pokemon *mon, u16 *currStats)
     currStats[STAT_SPEED] = GetMonData(mon, MON_DATA_SPEED);
     currStats[STAT_SPATK] = GetMonData(mon, MON_DATA_SPATK);
     currStats[STAT_SPDEF] = GetMonData(mon, MON_DATA_SPDEF);
+}
+
+void GetMonEVsWindowStats(struct Pokemon *mon, u16 *currStats)
+{
+    currStats[STAT_HP]    = GetMonData(mon, MON_DATA_HP_EV);
+    currStats[STAT_ATK]   = GetMonData(mon, MON_DATA_ATK_EV);
+    currStats[STAT_DEF]   = GetMonData(mon, MON_DATA_DEF_EV);
+    currStats[STAT_SPEED] = GetMonData(mon, MON_DATA_SPEED_EV);
+    currStats[STAT_SPATK] = GetMonData(mon, MON_DATA_SPATK_EV);
+    currStats[STAT_SPDEF] = GetMonData(mon, MON_DATA_SPDEF_EV);
 }

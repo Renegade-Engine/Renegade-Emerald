@@ -288,7 +288,7 @@ static const struct WindowTemplate sMapWindowTemplates[] =
 
 static const u8 sTextColors[][3] =
 {
-    {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_DARK_GREY, TEXT_COLOR_LIGHT_GREY},
+    {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_DARK_GRAY, TEXT_COLOR_LIGHT_GRAY},
     {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_WHITE, TEXT_COLOR_LIGHT_BLUE},
     {TEXT_COLOR_TRANSPARENT, TEXT_COLOR_RED, TEXT_COLOR_LIGHT_RED},
 };
@@ -751,8 +751,8 @@ static bool32 InitFrontierPass(void)
         ShowBg(2);
         LoadCursorAndSymbolSprites();
         SetVBlankCallback(VblankCb_FrontierPass);
-        BlendPalettes(0xFFFFFFFF, 0x10, RGB_BLACK);
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0x10, 0, RGB_BLACK);
+        BlendPalettes(PALETTES_ALL, 0x10, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK);
         break;
     case 10:
         AnimateSprites();
@@ -775,7 +775,7 @@ static bool32 HideFrontierPass(void)
     case 0:
         if (sPassData->unkE != 1 && sPassData->unkE != 2)
         {
-            BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 0x10, RGB_BLACK);
+            BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
         }
         else
         {
@@ -983,6 +983,9 @@ static void Task_HandleFrontierPassInput(u8 taskId)
                 SetMainCallback2(CB2_HideFrontierPass);
                 DestroyTask(taskId);
                 // BUG. The function should return here. Otherwise, it can play the same sound twice and destroy the same task twice.
+                #ifdef BUGFIX
+                return;
+                #endif
             }
         }
 
@@ -1020,7 +1023,7 @@ static void Task_DoFadeEffect(u8 taskId)
             data[2] = Q_8_8(1);
             data[3] = 0x15;
             data[4] = 0x15;
-            BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 0x10, RGB_WHITE);
+            BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_WHITE);
         }
         else
         {
@@ -1034,8 +1037,8 @@ static void Task_DoFadeEffect(u8 taskId)
             ShowBg(2);
             LoadCursorAndSymbolSprites();
             SetVBlankCallback(VblankCb_FrontierPass);
-            BlendPalettes(0xFFFFFFFF, 0x10, RGB_WHITE);
-            BeginNormalPaletteFade(0xFFFFFFFF, 0, 0x10, 0, RGB_WHITE);
+            BlendPalettes(PALETTES_ALL, 0x10, RGB_WHITE);
+            BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_WHITE);
         }
         sPassGfx->setAffine = TRUE;
         sPassGfx->unk2E = MathUtil_Inv16(data[1]);
@@ -1195,7 +1198,7 @@ static void sub_80C6104(u8 cursorArea, u8 previousCursorArea)
             return;
         break;
     }
-
+    
     switch (cursorArea)
     {
     case CURSOR_AREA_MAP:
@@ -1209,7 +1212,7 @@ static void sub_80C6104(u8 cursorArea, u8 previousCursorArea)
             CopyToBgTilemapBufferRect_ChangePalette(1, sPassGfx->unk28 + 72, 2, 10, 12, 3, 17);
         else
             return;
-        break; // needed
+        break; //needed to match
     case CURSOR_AREA_CANCEL:
         CopyToBgTilemapBufferRect_ChangePalette(1, gUnknown_08DE3374, 21, 0, 9, 2, 17);
         break;
@@ -1363,8 +1366,8 @@ static bool32 InitFrontierMap(void)
         ShowBg(2);
         InitFrontierMapSprites();
         SetVBlankCallback(VblankCb_FrontierPass);
-        BlendPalettes(0xFFFFFFFF, 0x10, RGB_WHITE);
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0x10, 0, RGB_WHITE);
+        BlendPalettes(PALETTES_ALL, 0x10, RGB_WHITE);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_WHITE);
         break;
     case 7:
         if (UpdatePaletteFade())
@@ -1382,7 +1385,7 @@ static bool32 ExitFrontierMap(void)
     switch (sPassData->state)
     {
     case 0:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 0x10, RGB_WHITE);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_WHITE);
         break;
     case 1:
         if (UpdatePaletteFade())

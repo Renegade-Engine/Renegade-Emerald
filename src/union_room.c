@@ -478,7 +478,11 @@ static void Task_TryBecomeLinkLeader(u8 taskId)
         // BUG: sPlayerActivityGroupSize was meant below, not gPlayerCurrActivity
         //      This will be false for all but ACTIVITY_BATTLE_DOUBLE and ACTIVITY_DECLINE
         //      All this changes is which of two texts gets printed
+        #ifdef BUGFIX
+        id = (GROUP_MAX(sPlayerActivityGroupSize) == 2) ? 0 : 1;
+        #else
         id = (GROUP_MAX(gPlayerCurrActivity) == 2) ? 1 : 0;
+        #endif
         if (PrintOnTextbox(&data->textState, sPlayerUnavailableTexts[id]))
         {
             data->playerCount = sub_8013398(data->field_0);
@@ -1320,7 +1324,11 @@ static bool32 IsPartnerActivityAcceptable(u32 activity, u32 linkGroup)
     if (linkGroup == 0xFF)
         return TRUE;
 
-    if (linkGroup <= ARRAY_COUNT(sAcceptedActivityIds)) // UB: <= may access data outside the array
+    #ifdef UBFIX
+    if (linkGroup < ARRAY_COUNT(sAcceptedActivityIds))
+    #else
+    if (linkGroup <= ARRAY_COUNT(sAcceptedActivityIds))
+    #endif
     {
         const u8 *bytes = sAcceptedActivityIds[linkGroup];
 
@@ -2978,7 +2986,7 @@ static void Task_RunUnionRoom(u8 taskId)
         uroom->state = UR_STATE_START_ACTIVITY_FADE;
         break;
     case UR_STATE_START_ACTIVITY_FADE:
-        BeginNormalPaletteFade(-1, 0, 0, 0x10, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
         uroom->state = UR_STATE_START_ACTIVITY;
         break;
     case UR_STATE_START_ACTIVITY:
@@ -3042,7 +3050,7 @@ static void Task_RunUnionRoom(u8 taskId)
         }
         break;
     case UR_STATE_REGISTER_SELECT_MON_FADE:
-        BeginNormalPaletteFade(-1, 0, 0, 0x10, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
         uroom->state = UR_STATE_REGISTER_SELECT_MON;
         break;
     case UR_STATE_REGISTER_SELECT_MON:
@@ -3753,7 +3761,7 @@ static void UR_AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str
     printerTemplate.y = y;
     printerTemplate.currentX = x;
     printerTemplate.currentY = y;
-    printerTemplate.style = 0;
+    printerTemplate.unk = 0;
 
     gTextFlags.useAlternateDownArrow = FALSE;
     switch (colorIdx)
@@ -3761,9 +3769,9 @@ static void UR_AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str
     case UR_COLOR_DKE_WHT_LTE:
         printerTemplate.letterSpacing = 0;
         printerTemplate.lineSpacing = 0;
-        printerTemplate.fgColor = TEXT_COLOR_DARK_GREY;
+        printerTemplate.fgColor = TEXT_COLOR_DARK_GRAY;
         printerTemplate.bgColor = TEXT_COLOR_WHITE;
-        printerTemplate.shadowColor = TEXT_COLOR_LIGHT_GREY;
+        printerTemplate.shadowColor = TEXT_COLOR_LIGHT_GRAY;
         break;
     case UR_COLOR_RED_WHT_LTR:
         printerTemplate.letterSpacing = 0;
@@ -3784,14 +3792,14 @@ static void UR_AddTextPrinterParameterized(u8 windowId, u8 fontId, const u8 *str
         printerTemplate.lineSpacing = 0;
         printerTemplate.fgColor = TEXT_COLOR_WHITE;
         printerTemplate.bgColor = TEXT_COLOR_WHITE;
-        printerTemplate.shadowColor = TEXT_COLOR_LIGHT_GREY;
+        printerTemplate.shadowColor = TEXT_COLOR_LIGHT_GRAY;
         break;
     case UR_COLOR_WHT_DKE_LTE:
         printerTemplate.letterSpacing = 0;
         printerTemplate.lineSpacing = 0;
         printerTemplate.fgColor = TEXT_COLOR_WHITE;
-        printerTemplate.bgColor = TEXT_COLOR_DARK_GREY;
-        printerTemplate.shadowColor = TEXT_COLOR_LIGHT_GREY;
+        printerTemplate.bgColor = TEXT_COLOR_DARK_GRAY;
+        printerTemplate.shadowColor = TEXT_COLOR_LIGHT_GRAY;
         break;
     case UR_COLOR_GRN_DN6_LTB:
         printerTemplate.letterSpacing = 0;
@@ -4076,14 +4084,14 @@ static void TradeBoardPrintItemInfo(u8 windowId, u8 y, struct GFtgtGname * gname
     UR_AddTextPrinterParameterized(windowId, 1, uname, 8, y, colorIdx);
     if (species == SPECIES_EGG)
     {
-        UR_AddTextPrinterParameterized(windowId, 1, sText_EggTrade, 0x44, y, colorIdx);
+        UR_AddTextPrinterParameterized(windowId, 1, sText_EggTrade, 68, y, colorIdx);
     }
     else
     {
-        blit_move_info_icon(windowId, type + 1, 0x44, y);
-        UR_AddTextPrinterParameterized(windowId, 1, gSpeciesNames[species], 0x76, y, colorIdx);
+        BlitMenuInfoIcon(windowId, type + 1, 68, y);
+        UR_AddTextPrinterParameterized(windowId, 1, gSpeciesNames[species], 118, y, colorIdx);
         ConvertIntToDecimalStringN(levelStr, level, STR_CONV_MODE_RIGHT_ALIGN, 3);
-        UR_AddTextPrinterParameterized(windowId, 1, levelStr, 0xC6, y, colorIdx);
+        UR_AddTextPrinterParameterized(windowId, 1, levelStr, 198, y, colorIdx);
     }
 }
 

@@ -34,7 +34,6 @@
 #include "new_game.h"
 #include "save.h"
 #include "strings.h"
-#include "constants/berry.h"
 #include "constants/game_stat.h"
 #include "constants/items.h"
 #include "constants/rgb.h"
@@ -168,8 +167,8 @@ struct BerryBlender
     u16 progressBarValue;
     u16 maxProgressBarValue;
     u16 centerScale;
-    s16 bg_X;
-    s16 bg_Y;
+    u16 bg_X;
+    u16 bg_Y;
     u8 opponentTaskIds[BLENDER_MAX_PLAYERS - 1];
     u8 perfectOpponents; // for debugging, NPCs will always hit Best
     u16 scores[BLENDER_MAX_PLAYERS][NUM_SCORE_TYPES];
@@ -1098,7 +1097,7 @@ static void CB2_LoadBerryBlender(void)
         }
         break;
     case 2:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0x10, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK);
         UpdateBlenderCenter();
         sBerryBlender->mainState++;
         break;
@@ -1112,7 +1111,7 @@ static void CB2_LoadBerryBlender(void)
             sBerryBlender->mainState++;
         break;
     case 5:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 0x10, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
         sBerryBlender->mainState++;
         break;
     case 6:
@@ -1327,7 +1326,7 @@ static void CB2_StartBlenderLink(void)
         sBerryBlender->mainState++;
         break;
     case 3:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0x10, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK);
         sBerryBlender->mainState++;
         break;
     case 4:
@@ -1427,7 +1426,7 @@ static void CB2_StartBlenderLink(void)
         sBerryBlender->centerScale += 4;
         if (sBerryBlender->centerScale > 255)
         {
-            SetGpuRegBits(REG_OFFSET_BG2CNT, 2);
+            SetGpuRegBits(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2));
             sBerryBlender->mainState++;
             sBerryBlender->centerScale = 256;
             sBerryBlender->arrowPos = sArrowStartPos[sArrowStartPosIds[sBerryBlender->numPlayers - 2]];
@@ -1665,7 +1664,7 @@ static void CB2_StartBlenderLocal(void)
         sBerryBlender->mainState++;
         break;
     case 3:
-        BeginNormalPaletteFade(0xFFFFFFFF, 0, 0x10, 0, RGB_BLACK);
+        BeginNormalPaletteFade(PALETTES_ALL, 0, 0x10, 0, RGB_BLACK);
         sBerryBlender->mainState++;
         sBerryBlender->framesToWait = 0;
         break;
@@ -1727,7 +1726,7 @@ static void CB2_StartBlenderLocal(void)
             sBerryBlender->mainState++;
             sBerryBlender->centerScale = 256;
             sBerryBlender->arrowPos = sArrowStartPos[sArrowStartPosIds[sBerryBlender->numPlayers - 2]];
-            SetGpuRegBits(REG_OFFSET_BG2CNT, 2);
+            SetGpuRegBits(REG_OFFSET_BG2CNT, BGCNT_PRIORITY(2));
             sBerryBlender->framesToWait = 0;
             PlaySE(SE_TRUCK_DOOR);
             PrintPlayerNames();
@@ -1852,7 +1851,9 @@ static void Task_HandleOpponent1(u8 taskId)
                         gRecvCmds[1][BLENDER_COMM_SCORE] = LINKCMD_BLENDER_SCORE_GOOD;
 
                     // BUG: Overrwrote above assignment. Opponent 1 can't get Best at low speed
+                    #ifndef BUGFIX
                     gRecvCmds[1][BLENDER_COMM_SCORE] = LINKCMD_BLENDER_SCORE_GOOD;
+                    #endif
                 }
                 else if (sBerryBlender->speed < 1500)
                 {
@@ -2131,11 +2132,17 @@ static void UpdateOpponentScores(void)
                     sBerryBlender->scores[i][SCORE_MISS]++;
             }
 
-            // BUG: Should [i][BLENDER_COMM_SCORE] below, not [BLENDER_COMM_SCORE][i]
+            // BUG: Should be [i][BLENDER_COMM_SCORE] below, not [BLENDER_COMM_SCORE][i]
             // As a result the music tempo updates if any player misses, but only if 1 specific player hits
+            #ifdef BUGFIX
+            if (gRecvCmds[i][BLENDER_COMM_SCORE] == LINKCMD_BLENDER_SCORE_MISS 
+             || gRecvCmds[i][BLENDER_COMM_SCORE] == LINKCMD_BLENDER_SCORE_BEST 
+             || gRecvCmds[i][BLENDER_COMM_SCORE] == LINKCMD_BLENDER_SCORE_GOOD)
+            #else
             if (gRecvCmds[i][BLENDER_COMM_SCORE] == LINKCMD_BLENDER_SCORE_MISS 
              || gRecvCmds[BLENDER_COMM_SCORE][i] == LINKCMD_BLENDER_SCORE_BEST 
              || gRecvCmds[BLENDER_COMM_SCORE][i] == LINKCMD_BLENDER_SCORE_GOOD)
+            #endif
             {
                 if (sBerryBlender->speed > 1500)
                     m4aMPlayTempoControl(&gMPlayInfo_BGM, ((sBerryBlender->speed - 750) / 20) + 256);
@@ -2382,7 +2389,7 @@ static s16 Debug_GetGameTimeStage(void)
 static void CalculatePokeblock(struct BlenderBerry *berries, struct Pokeblock *pokeblock, u8 numPlayers, u8 *flavors, u16 maxRPM)
 {
     s32 i, j;
-    s32 multiuseVar, var2;
+    s32 multiuseVar;
     u8 numNegatives;
 
     for (i = 0; i < FLAVOR_COUNT + 1; i++)
@@ -2888,7 +2895,7 @@ static void CB2_CheckPlayAgainLink(void)
     case 9:
         if (IsLinkTaskFinished())
         {
-            BeginNormalPaletteFade(0xFFFFFFFF, 0, 0, 0x10, RGB_BLACK);
+            BeginNormalPaletteFade(PALETTES_ALL, 0, 0, 0x10, RGB_BLACK);
             sBerryBlender->gameEndState++;
         }
         break;
@@ -3387,13 +3394,13 @@ static void RestoreBgCoord(s16* coord)
 // For "unshaking" the screen after ShakeBgCoordForHit is called
 static void RestoreBgCoords(void)
 {
-    RestoreBgCoord((s16 *)&sBerryBlender->bg_X);
-    RestoreBgCoord((s16 *)&sBerryBlender->bg_Y);
+    RestoreBgCoord(&sBerryBlender->bg_X);
+    RestoreBgCoord(&sBerryBlender->bg_Y);
 }
 
 static void BlenderLandShakeBgCoord(s16* coord, u16 timer)
 {
-    u8 strength;
+    s32 strength;
 
     if (timer < 10)
         strength = 16;
@@ -3852,13 +3859,13 @@ static void Blender_AddTextPrinter(u8 windowId, const u8 *string, u8 x, u8 y, s3
     case 0:
     case 3:
         txtColor[0] = TEXT_COLOR_WHITE;
-        txtColor[1] = TEXT_COLOR_DARK_GREY;
-        txtColor[2] = TEXT_COLOR_LIGHT_GREY;
+        txtColor[1] = TEXT_COLOR_DARK_GRAY;
+        txtColor[2] = TEXT_COLOR_LIGHT_GRAY;
         break;
     case 1:
         txtColor[0] = TEXT_COLOR_TRANSPARENT;
-        txtColor[1] = TEXT_COLOR_DARK_GREY;
-        txtColor[2] = TEXT_COLOR_LIGHT_GREY;
+        txtColor[1] = TEXT_COLOR_DARK_GRAY;
+        txtColor[2] = TEXT_COLOR_LIGHT_GRAY;
         break;
     case 2:
         txtColor[0] = TEXT_COLOR_TRANSPARENT;

@@ -117,7 +117,7 @@ LittlerootTown_ProfessorBirchsLab_OnFrame: @ 81F9DB9
 @ This is just where the game tells you its yours and lets you nickname it
 LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent:: @ 81F9DDB
 	lockall
-	bufferleadmonspeciesname 0
+	bufferpartymonnick 0, 1
 	message LittlerootTown_ProfessorBirchsLab_Text_LikeYouToHavePokemon
 	waitmessage
 	playfanfare MUS_OBTAIN_ITEM
@@ -130,7 +130,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_GiveStarterEvent:: @ 81F9DDB
 	end
 
 LittlerootTown_ProfessorBirchsLab_EventScript_NicknameStarter:: @ 81F9E07
-	setvar VAR_0x8004, 0
+	setvar VAR_0x8004, 1
 	call Common_EventScript_NameReceivedPartyMon
 	goto LittlerootTown_ProfessorBirchsLab_EventScript_GoSeeRival
 	end
@@ -147,6 +147,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_AgreeToSeeRival:: @ 81F9E36
 	msgbox LittlerootTown_ProfessorBirchsLab_Text_GetRivalToTeachYou, MSGBOX_DEFAULT
 	clearflag FLAG_HIDE_ROUTE_101_BOY
 	setvar VAR_BIRCH_LAB_STATE, 3
+	setvar VAR_LITTLEROOT_TOWN_STATE, 3
 	releaseall
 	end
 
@@ -563,8 +564,7 @@ LittlerootTown_ProfessorBirchsLab_EventScript_GivePokedex:: @ 81FA2F8
 	setvar VAR_BIRCH_LAB_STATE, 5
 	setflag FLAG_ADVENTURE_STARTED
 	setvar VAR_OLDALE_TOWN_STATE, 1
-	setvar VAR_LITTLEROOT_RIVAL_STATE, 4
-	setvar VAR_LITTLEROOT_TOWN_STATE, 3
+	setvar VAR_LITTLEROOT_RIVAL_STATE, 4	
 	releaseall
 	end
 

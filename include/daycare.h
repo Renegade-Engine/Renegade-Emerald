@@ -6,7 +6,7 @@
 u8 *GetMonNickname2(struct Pokemon *mon, u8 *dest);
 u8 *GetBoxMonNickname(struct BoxPokemon *mon, u8 *dest);
 u8 CountPokemonInDaycare(struct DayCare *daycare);
-void InitDaycareMailRecordMixing(struct DayCare *daycare, struct RecordMixingDayCareMail *daycareMail);
+void InitDaycareMailRecordMixing(struct DayCare *daycare, struct RecordMixingDaycareMail *daycareMail);
 void StoreSelectedPokemonInDaycare(void);
 u16 TakePokemonFromDaycare(void);
 void GetDaycareCost(void);
@@ -23,5 +23,6 @@ void SetDaycareCompatibilityString(void);
 bool8 NameHasGenderSymbol(const u8 *name, u8 genderRatio);
 void ShowDaycareLevelMenu(void);
 void ChooseSendDaycareMon(void);
+void UpdateEggCycles(u8 mod);
 
 #endif // GUARD_DAYCARE_H

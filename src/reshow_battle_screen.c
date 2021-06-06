@@ -23,7 +23,7 @@ static void CreateBattlerSprite(u8 battlerId);
 static void CreateHealthboxSprite(u8 battlerId);
 static void sub_80A95F4(void);
 
-void nullsub_35(void)
+void ReshowBattleScreenDummy(void)
 {
 
 }
@@ -219,6 +219,8 @@ static void CreateBattlerSprite(u8 battler)
         if (GetBattlerSide(battler) != B_SIDE_PLAYER)
         {
             if (GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_HP) == 0)
+                return;
+            if (gBattleScripting.monCaught) // Don't create opponent sprite if it has been caught.
                 return;
 
             SetMultiuseSpriteTemplateToPokemon(GetMonData(&gEnemyParty[gBattlerPartyIndexes[battler]], MON_DATA_SPECIES), GetBattlerPosition(battler));
