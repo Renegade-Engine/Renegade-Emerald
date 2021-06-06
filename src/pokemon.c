@@ -4019,6 +4019,8 @@ u8 GiveMonToPlayer(struct Pokemon *mon)
         return SendMonToPC(mon);
 
     CopyMon(&gPlayerParty[i], mon, sizeof(*mon));
+    PokemonUseItemEffects(&gPlayerParty[i], ITEM_MAX_ELIXIR, i, 0, 0);
+    PokemonUseItemEffects(&gPlayerParty[i], ITEM_FULL_RESTORE, i, 0, 0);
     gPlayerPartyCount = i + 1;
     return MON_GIVEN_TO_PARTY;
 }
