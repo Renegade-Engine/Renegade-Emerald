@@ -1,3 +1,5 @@
+.set LOCALID_RIVAL, 9
+
 SSTidalRooms_MapScripts:: @ 823C9F1
 	.byte 0
 
@@ -25,6 +27,7 @@ SSTidalRooms_EventScript_Bed:: @ 823CA33
 	closemessage
 	call Common_EventScript_OutOfCenterPartyHeal
 	call SSTidalRooms_EventScript_ProgessCruiseAfterBed
+	call_if_unset FLAG_HIDE_SS_TIDAL_CABIN_RIVAL, SSTidalRooms_EventScript_RivalLeavesCabin
 	releaseall
 	end
 
@@ -62,6 +65,94 @@ SSTidalRooms_EventScript_Naomi:: @ 823CADB
 	trainerbattle_single TRAINER_NAOMI, SSTidalRooms_Text_NaomiIntro, SSTidalRooms_Text_NaomiDefeat
 	msgbox SSTidalRooms_Text_NaomiPostBattle, MSGBOX_AUTOCLOSE
 	end
+
+SSTidalRooms_EventScript_Rival::
+	faceplayer
+	checkplayergender
+	compare VAR_RESULT, MALE
+	call_if_eq SSTidalRooms_EventScript_ChatMay
+	compare VAR_RESULT, FEMALE
+	call_if_eq SSTidalRooms_EventScript_ChatBrendan
+	end
+
+SSTidalRooms_EventScript_ChatMay::
+	msgbox SSTidalRooms_Text_ChatMay, MSGBOX_DEFAULT
+	closemessage
+	return
+
+SSTidalRooms_EventScript_ChatBrendan::
+	msgbox SSTidalRooms_Text_ChatBrendan, MSGBOX_DEFAULT
+	closemessage
+	return
+
+SSTidalRooms_EventScript_RivalLeavesCabin::
+	closemessage
+	applymovement LOCALID_RIVAL, SSTidalRooms_Movement_RivalReadyToLeave
+	waitmovement 0
+	checkplayergender
+	compare VAR_RESULT, MALE
+	call_if_eq SSTidalRooms_EventScript_MaySayGoodbye
+	compare VAR_RESULT, FEMALE
+	call_if_eq SSTidalRooms_EventScript_BrendanSayGoodbye
+	applymovement LOCALID_RIVAL, SSTidalRooms_Movement_RivalLeave
+	waitmovement 0
+	removeobject LOCALID_RIVAL
+	setflag FLAG_HIDE_SS_TIDAL_CABIN_RIVAL
+	return
+
+SSTidalRooms_EventScript_MaySayGoodbye::
+	msgbox SSTidalRooms_Text_MayGoodbye, MSGBOX_DEFAULT
+	closemessage
+	return
+
+SSTidalRooms_EventScript_BrendanSayGoodbye::
+	msgbox SSTidalRooms_Text_BrendanGoodbye, MSGBOX_DEFAULT
+	closemessage
+	return
+	
+SSTidalRooms_Movement_RivalReadyToLeave:
+	walk_right
+	walk_right
+	walk_in_place_fastest_up
+	step_end
+
+SSTidalRooms_Movement_RivalLeave:
+	walk_down
+	walk_down
+	step_end
+
+SSTidalRooms_Text_ChatMay:
+	.string "MAY: In LILYCOVE there is a MOTEL,\n"
+	.string "a MUSEUM and even a POKéMON CONTEST HALL.\p"
+	.string "It's one of the best places to do\n"
+	.string "tourism in HOENN.$"
+
+SSTidalRooms_Text_ChatBrendan:
+	.string "BRENDAN: I heard that some of the\n"
+	.string "passengers are actually POKéMON TRAINERS.\p"
+	.string "Maybe you would like to\n"
+	.string "battle them in the meantime.$"
+
+SSTidalRooms_Text_MayGoodbye:
+	.string "MAY: Hey, looks like the ferry\n"
+	.string "arrived to LILYCOVE CITY.\p"
+	.string "I can't wait to visit the SAFARI ZONE!\p"
+	.string "Also, did you know? I heard that there is\n"
+	.string "a DEPARTMENT STORE at LILYCOVE CITY!\p"
+	.string "I'll go and pay a visit to it.\n"
+	.string "I wonder how many things I'll buy?\p"
+	.string "Well, see you later {PLAYER}{KUN}!$"
+
+SSTidalRooms_Text_BrendanGoodbye:
+	.string "BRENDAN: Well, seems that the ferry has\n"
+	.string "already arrived to LILYCOVE CITY.\p"
+	.string "I'll try going to the SAFARI ZONE\n"
+	.string "to complete my POKéDEX.\p"
+	.string "Oh, I'll also step by the\n"
+	.string "DEPARTMENT STORE at LILYCOVE CITY.\p"
+	.string "There may be useful items on sale\n"
+	.string "in there.\p"
+	.string "Well then, goodbye {PLAYER}.$"
 
 SSTidalRooms_Text_TakeRestOnBed: @ 823CAF2
 	.string "There's a bed…\n"

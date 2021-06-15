@@ -1,4 +1,5 @@
 .set LOCALID_RIVAL, 1
+.set LOCALID_BALL, 16
 
 LittlerootTown_MaysHouse_2F_MapScripts:: @ 81F9296
 	map_script MAP_SCRIPT_ON_TRANSITION, LittlerootTown_MaysHouse_2F_OnTransition
@@ -59,39 +60,44 @@ LittlerootTown_MaysHouse_2F_EventScript_RivalsPokeBall:: @ 81F9334
 	lockall
 	compare VAR_LITTLEROOT_RIVAL_STATE, 2
 	goto_if_eq LittlerootTown_MaysHouse_2F_EventScript_MeetMay
+	goto LittlerootTown_RivalsHouse_2F_EventScript_GiveStarterConfirmation
+	end
+	
+LittlerootTown_RivalsHouse_2F_EventScript_GiveStarterConfirmation::
 	msgbox RivalsHouse_2F_Text_TakeBallContainingStarter, MSGBOX_YESNO
 	compare VAR_RESULT, NO
-	goto_if_eq LittlerootTown_MaysHouse_2F_EventScript_LeaveStarter
-	goto LittlerootTown_MaysHouse_2F_EventScript_GiveStarter
+	goto_if_eq LittlerootTown_RivalsHouse_2F_EventScript_LeaveStarter
+	goto LittlerootTown_RivalsHouse_2F_EventScript_GiveStarter
 	end
 
-LittlerootTown_MaysHouse_2F_EventScript_LeaveStarter::
+LittlerootTown_RivalsHouse_2F_EventScript_LeaveStarter::
 	msgbox RivalsHouse_2F_Text_LeftPokeBallWhereItWas, MSGBOX_DEFAULT
 	releaseall
 	end
 
-LittlerootTown_MaysHouse_2F_EventScript_GiveStarter::
+LittlerootTown_RivalsHouse_2F_EventScript_GiveStarter::
 	setvar VAR_TEMP_1, SPECIES_EEVEE
+	removeobject VAR_LAST_TALKED
 	givemon SPECIES_EEVEE, 3, ITEM_NONE
-	call LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarterFanfare
+	call LittlerootTown_RivalsHouse_2F_EventScript_ReceivedStarterFanfare
 	msgbox gText_NicknameThisPokemon, MSGBOX_YESNO
 	compare VAR_RESULT, NO
-	goto_if_eq LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarter
+	goto_if_eq LittlerootTown_RivalsHouse_2F_EventScript_ReceivedStarter
 	call Common_EventScript_GetGiftMonPartySlot
 	call Common_EventScript_NameReceivedPartyMon
-	goto LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarter
+	goto LittlerootTown_RivalsHouse_2F_EventScript_ReceivedStarter
 	end
 
-LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarter::
+LittlerootTown_RivalsHouse_2F_EventScript_ReceivedStarter::
 	setflag FLAG_HIDE_LITTLEROOT_TOWN_MAYS_HOUSE_2F_POKE_BALL
+	setflag FLAG_HIDE_LITTLEROOT_TOWN_BRENDANS_HOUSE_2F_POKE_BALL
 	setflag FLAG_SYS_POKEMON_GET
 	setvar VAR_LITTLEROOT_TOWN_STATE, 1
 	releaseall
 	end
 
-LittlerootTown_MaysHouse_2F_EventScript_ReceivedStarterFanfare:: @ 82228EB
+LittlerootTown_RivalsHouse_2F_EventScript_ReceivedStarterFanfare:: @ 82228EB
 	bufferspeciesname 1, SPECIES_EEVEE
-	removeobject 16
 	playfanfare MUS_OBTAIN_ITEM
 	message RivalsHouse_2F_Text_ObtainedStarter
 	waitmessage
@@ -382,6 +388,11 @@ RivalsHouse_2F_Text_MayWhoAreYou: @ 81F959C
 	.string "Oh, this is silly, isn't it?\n"
 	.string "I… I've just met you, {PLAYER}{KUN}.\p"
 	.string "Eheheh…\p"
+	.string "Oh, I know!\p"
+	.string "Do you see that POKé BALL? There's\n"
+	.string "a special POKéMON I caught the other day.\l"
+	.string "I want you to have it and take care of it.\n"
+	.string "This is my first gift as your friend!\p"
 	.string "Oh, no! I forgot!\p"
 	.string "I was supposed to go help Dad catch\n"
 	.string "some wild POKéMON!\p"
@@ -405,11 +416,15 @@ RivalsHouse_2F_Text_BrendanWhoAreYou: @ 81F97B4
 	.string "So, hi, neighbor!\p"
 	.string "Huh? Hey, {PLAYER}, don't you have\n"
 	.string "a POKéMON?\p"
-	.string "Do you want me to go catch you one?\p"
+	.string "Do you want me to give you one?\p"
+	.string "You're lucky. That POKé BALL there has\n"
+	.string "a POKéMON I caught the other day.\p"
+	.string "You can have it as your first POKéMON.\n"
+	.string "Pretty nice, isn't it?\p"
 	.string "Aw, darn, I forgot…\p"
 	.string "I'm supposed to go help my dad catch\n"
 	.string "some wild POKéMON.\p"
-	.string "Some other time, okay?$"
+	.string "I'll see you later, okay?$"
 
 RivalsHouse_2F_Text_BrendanGettingReady: @ 81F9962
 	.string "POKéMON fully restored…\n"

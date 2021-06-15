@@ -21,10 +21,10 @@ DewfordTown_OnTransition: @ 81E950D
 DewfordTown_EventScript_Briney:: @ 81E9511
 	lock
 	faceplayer
-	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_ReturnToPetalburgPrompt
+	@ goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_ReturnToPetalburgPrompt
 	message DewfordTown_Text_WhereAreWeBound
 	waitmessage
-	multichoicedefault 21, 6, MULTI_BRINEY_ON_DEWFORD, 2, 0
+	multichoicedefault 21, 6, MULTI_BRINEY_ON_DEWFORD, 2, FALSE
 	switch VAR_RESULT
 	case 0, DewfordTown_EventScript_ChoosePetalburg
 	case 1, DewfordTown_EventScript_ChooseSlateport
@@ -47,6 +47,7 @@ DewfordTown_EventScript_ChooseSlateport:: @ 81E956A
 	end
 
 DewfordTown_EventScript_CancelSailSelect:: @ 81E957A
+	goto_if_unset FLAG_DELIVERED_STEVEN_LETTER, DewfordTown_EventScript_GoDeliverIllBeWaiting
 	msgbox DewfordTown_Text_JustTellMeWhenYouNeedToSetSail, MSGBOX_DEFAULT
 	closemessage
 	release
@@ -57,6 +58,12 @@ DewfordTown_EventScript_ReturnToPetalburgPrompt:: @ 81E9585
 	compare VAR_RESULT, YES
 	goto_if_eq DewfordTown_EventScript_SailBackToPetalburg
 	msgbox DewfordTown_Text_GoDeliverIllBeWaiting, MSGBOX_DEFAULT
+	release
+	end
+
+DewfordTown_EventScript_GoDeliverIllBeWaiting::
+	msgbox DewfordTown_Text_GoDeliverIllBeWaiting, MSGBOX_DEFAULT
+	closemessage
 	release
 	end
 
@@ -109,7 +116,7 @@ DewfordTown_EventScript_NotGettingItchToFish:: @ 81E9620
 DewfordTown_EventScript_HowsFishing:: @ 81E962A
 	message DewfordTown_Text_HowsYourFishing
 	waitmessage
-	multichoice 20, 8, MULTI_HOWS_FISHING, 1
+	multichoice 20, 8, MULTI_HOWS_FISHING, TRUE
 	compare VAR_RESULT, 0
 	goto_if_eq DewfordTown_EventScript_FishingExcellent
 	compare VAR_RESULT, 1
@@ -624,15 +631,15 @@ DewfordTown_EventScript_RejectTrendyPhrase:: @ 81E9952
 	call Common_ShowEasyChatScreen
 	lock
 	faceplayer
-	compare VAR_RESULT, 1
+	compare VAR_RESULT, TRUE
 	goto_if_eq DewfordTown_EventScript_GiveNewTrendyPhrase
-	compare VAR_RESULT, 0
+	compare VAR_RESULT, FALSE
 	goto_if_eq DewfordTown_EventScript_CancelNewTrendyPhrase
 	end
 
 DewfordTown_EventScript_GiveNewTrendyPhrase:: @ 81E997D
 	incrementgamestat GAME_STAT_STARTED_TRENDS
-	compare VAR_0x8004, 0
+	compare VAR_0x8004, FALSE
 	goto_if_eq DewfordTown_EventScript_PhraseNotTrendyEnough
 	msgbox DewfordTown_Text_OfCourseIKnowAboutThat, MSGBOX_DEFAULT
 	release

@@ -138,7 +138,7 @@
 
 const struct ContestWinner gDefaultContestWinners[] =
 {
-    {
+    [CONTEST_WINNER_HALL_1 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_ELECTRIKE,
@@ -147,7 +147,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("EZRA"),
         .contestRank = CONTEST_RANK_NORMAL
     },
-    {
+    [CONTEST_WINNER_HALL_2 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_TROPIUS,
@@ -156,7 +156,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("ALLAN"),
         .contestRank = CONTEST_RANK_HYPER
     },
-    {
+    [CONTEST_WINNER_HALL_3 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_XATU,
@@ -165,7 +165,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("JULIET"),
         .contestRank = CONTEST_RANK_NORMAL
     },
-    {
+    [CONTEST_WINNER_HALL_4 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_PLUSLE,
@@ -174,7 +174,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("BAILY"),
         .contestRank = CONTEST_RANK_MASTER
     },
-    {
+    [CONTEST_WINNER_HALL_5 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_SHUPPET,
@@ -183,7 +183,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("MELANY"),
         .contestRank = CONTEST_RANK_SUPER
     },
-    {
+    [CONTEST_WINNER_HALL_6 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_ZANGOOSE,
@@ -192,7 +192,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("HANA"),
         .contestRank = CONTEST_RANK_HYPER
     },
-    {
+    [CONTEST_WINNER_HALL_UNUSED_1 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_LOUDRED,
@@ -201,7 +201,7 @@ const struct ContestWinner gDefaultContestWinners[] =
         .trainerName = _("BRYANT"),
         .contestRank = CONTEST_RANK_HYPER
     },
-    {
+    [CONTEST_WINNER_HALL_UNUSED_2 - 1] = {
         .personality = 0,
         .trainerId = 0xFFFF,
         .species = SPECIES_DELCATTY,
@@ -959,7 +959,7 @@ const struct ContestPokemon gContestOpponents[] =
             MOVE_BITE,
             MOVE_SAND_ATTACK,
             MOVE_DIG,
-            MOVE_FAINT_ATTACK
+            MOVE_FEINT_ATTACK
         },
         .cool = 75,
         .beauty = 25,
@@ -2190,7 +2190,7 @@ const struct ContestPokemon gContestOpponents[] =
         {
             MOVE_ROAR,
             MOVE_FLAMETHROWER,
-            MOVE_FAINT_ATTACK,
+            MOVE_FEINT_ATTACK,
             MOVE_SUNNY_DAY
         },
         .cool = 100,
@@ -2302,7 +2302,7 @@ const struct ContestPokemon gContestOpponents[] =
         {
             MOVE_ATTRACT,
             MOVE_ASSIST,
-            MOVE_FAINT_ATTACK,
+            MOVE_FEINT_ATTACK,
             MOVE_TAIL_WHIP
         },
         .cool = 40,
@@ -2441,7 +2441,7 @@ const struct ContestPokemon gContestOpponents[] =
         .moves =
         {
             MOVE_MEAN_LOOK,
-            MOVE_FAINT_ATTACK,
+            MOVE_FEINT_ATTACK,
             MOVE_KNOCK_OFF,
             MOVE_CONFUSE_RAY
         },

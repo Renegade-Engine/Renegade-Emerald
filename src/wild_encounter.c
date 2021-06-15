@@ -112,7 +112,7 @@ static bool8 CheckFeebas(void)
         if (Random() % 100 > 49) // 50% chance of encountering Feebas
             return FALSE;
 
-        FeebasSeedRng(gSaveBlock1Ptr->easyChatPairs[0].unk2);
+        FeebasSeedRng(gSaveBlock1Ptr->dewfordTrends[0].rand);
         for (i = 0; i != NUM_FEEBAS_SPOTS;)
         {
             feebasSpots[i] = FeebasRandom() % 447;
@@ -299,8 +299,11 @@ static u16 GetCurrentMapWildMonHeaderId(void)
                 i += alteringCaveId;
                 return i;
             }
-            if ((i == 0 && IsDayTime()) || (i == 1 && IsNightTime()))
-                return i;
+            if (IsNightTime() 
+            && gWildMonHeaders[i + 1].mapGroup == gSaveBlock1Ptr->location.mapGroup 
+            && gWildMonHeaders[i + 1].mapNum == gSaveBlock1Ptr->location.mapNum)
+                return i + 1;
+            return i;
         }
     }
 

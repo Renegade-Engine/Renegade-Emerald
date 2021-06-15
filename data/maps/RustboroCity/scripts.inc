@@ -253,7 +253,7 @@ RustboroCity_EventScript_Man2:: @ 81E094E
 
 RustboroCity_EventScript_StolenGoodsTrigger0:: @ 81E095A
 	lockall
-	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 14, 21
+	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 12, 21
 	setobjectmovementtype LOCALID_DEVON_EMPLOYEE, MOVEMENT_TYPE_FACE_RIGHT
 	setvar VAR_0x8004, 0
 	goto RustboroCity_EventScript_StolenGoodsScene
@@ -261,7 +261,7 @@ RustboroCity_EventScript_StolenGoodsTrigger0:: @ 81E095A
 
 RustboroCity_EventScript_StolenGoodsTrigger1:: @ 81E0971
 	lockall
-	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 14, 21
+	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 12, 21
 	setobjectmovementtype LOCALID_DEVON_EMPLOYEE, MOVEMENT_TYPE_FACE_RIGHT
 	setvar VAR_0x8004, 1
 	goto RustboroCity_EventScript_StolenGoodsScene
@@ -269,7 +269,7 @@ RustboroCity_EventScript_StolenGoodsTrigger1:: @ 81E0971
 
 RustboroCity_EventScript_StolenGoodsTrigger2:: @ 81E0988
 	lockall
-	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 14, 21
+	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 12, 21
 	setobjectmovementtype LOCALID_DEVON_EMPLOYEE, MOVEMENT_TYPE_FACE_RIGHT
 	setvar VAR_0x8004, 2
 	goto RustboroCity_EventScript_StolenGoodsScene
@@ -277,7 +277,7 @@ RustboroCity_EventScript_StolenGoodsTrigger2:: @ 81E0988
 
 RustboroCity_EventScript_StolenGoodsTrigger3:: @ 81E099F
 	lockall
-	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 14, 21
+	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 12, 21
 	setobjectmovementtype LOCALID_DEVON_EMPLOYEE, MOVEMENT_TYPE_FACE_RIGHT
 	setvar VAR_0x8004, 3
 	goto RustboroCity_EventScript_StolenGoodsScene
@@ -285,7 +285,7 @@ RustboroCity_EventScript_StolenGoodsTrigger3:: @ 81E099F
 
 RustboroCity_EventScript_StolenGoodsTrigger4:: @ 81E09B6
 	lockall
-	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 14, 21
+	setobjectxyperm LOCALID_DEVON_EMPLOYEE, 12, 21
 	setobjectmovementtype LOCALID_DEVON_EMPLOYEE, MOVEMENT_TYPE_FACE_RIGHT
 	setvar VAR_0x8004, 4
 	goto RustboroCity_EventScript_StolenGoodsScene
@@ -386,16 +386,14 @@ RustboroCity_Movement_GruntEscapeExtended: @ 81E0A8E
 	step_end
 
 RustboroCity_Movement_GruntEscape: @ 81E0AA0
-	walk_fastest_right
-	walk_fastest_right
 	walk_fast_right
 	walk_fast_right
 	walk_fast_right
 	walk_fast_right
 	walk_fast_right
-	walk_fast_up
-	walk_fast_up
-	walk_fast_up
+	walk_fast_right
+	walk_fast_right
+	walk_fast_right
 	walk_fast_up
 	walk_fast_up
 	walk_fast_up
@@ -411,11 +409,12 @@ RustboroCity_Movement_EmployeeChaseGrunt1: @ 81E0AB1
 	walk_right
 	walk_right
 	walk_right
+	walk_right
+	walk_right
 	walk_in_place_fastest_up
 	step_end
 
 RustboroCity_Movement_EmployeeChaseGrunt2: @ 81E0AB9
-	walk_up
 	walk_up
 	walk_up
 	walk_up

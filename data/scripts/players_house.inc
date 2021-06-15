@@ -453,8 +453,8 @@ PlayersHouse_1F_EventScript_GetSSTicketAndSeeLatiTV:: @ 8292AF2
 	compare VAR_0x8008, FEMALE
 	call_if_eq PlayersHouse_1F_EventScript_DadApproachPlayerFemale
 	msgbox PlayersHouse_1F_Text_TicketFromBrineyCameForYou, MSGBOX_DEFAULT
-	giveitem ITEM_SS_TICKET
-	msgbox PlayersHouse_1F_Text_PortsInSlateportLilycove, MSGBOX_DEFAULT
+	@ giveitem ITEM_SS_TICKET
+	@ msgbox PlayersHouse_1F_Text_PortsInSlateportLilycove, MSGBOX_DEFAULT
 	closemessage
 	delay 20
 	compare VAR_0x8008, MALE
@@ -469,7 +469,9 @@ PlayersHouse_1F_EventScript_GetSSTicketAndSeeLatiTV:: @ 8292AF2
 	call_if_eq PlayersHouse_1F_EventScript_DadExitsFemale
 	playse SE_DOOR
 	removeobject VAR_0x8009
-	setflag FLAG_RECEIVED_SS_TICKET
+	setvar VAR_SS_TIDAL_SCOTT_STATE, 2
+	clearflag FLAG_HIDE_SS_TIDAL_CORRIDOR_SCOTT
+	@ setflag FLAG_RECEIVED_SS_TICKET
 	delay 30
 	compare VAR_0x8008, MALE
 	call_if_eq PlayersHouse_1F_EventScript_MomApproachPlayerMale
@@ -501,7 +503,7 @@ PlayersHouse_1F_EventScript_GetSSTicketAndSeeLatiTV:: @ 8292AF2
 	compare VAR_0x8008, FEMALE
 	call_if_eq PlayersHouse_1F_EventScript_MomApproachPlayerAfterTVFemale
 	msgbox PlayersHouse_1F_Text_WhatColorDidTheySay, MSGBOX_DEFAULT
-	multichoice 22, 8, MULTI_TV_LATI, 1
+	multichoice 22, 8, MULTI_TV_LATI, TRUE
 	copyvar VAR_0x8004, VAR_RESULT
 	special InitRoamer
 	copyvar VAR_ROAMER_POKEMON, VAR_RESULT

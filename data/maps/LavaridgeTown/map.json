@@ -180,6 +180,20 @@
       "elevation": 3,
       "dest_map": "MAP_LAVARIDGE_TOWN_POKEMON_CENTER_1F",
       "dest_warp_id": 3
+    },
+    {
+      "x": 21,
+      "y": 5,
+      "elevation": 0,
+      "dest_map": "MAP_JAGGED_PASS",
+      "dest_warp_id": 0
+    },
+    {
+      "x": 22,
+      "y": 5,
+      "elevation": 0,
+      "dest_map": "MAP_JAGGED_PASS",
+      "dest_warp_id": 1
     }
   ],
   "coord_events": [

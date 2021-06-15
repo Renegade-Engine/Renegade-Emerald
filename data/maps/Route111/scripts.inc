@@ -19,8 +19,8 @@ Route111_OnLoad: @ 81F0CBC
 	end
 
 Route111_EventScript_CloseDesertRuins:: @ 81F0CD1
-	setmetatile 29, 86, METATILE_General_RockWall_RockBase, 1
-	setmetatile 29, 87, METATILE_General_RockWall_SandBase, 1
+	setmetatile 12, 22, METATILE_General_RockWall_RockBase, 1
+	setmetatile 12, 23, METATILE_General_RockWall_SandBase, 1
 	return
 
 @ Show Mirage Tower just prior to disintegration. Mirage Tower is otherwise handled by the map layout
@@ -737,11 +737,11 @@ Route111_Text_RootFossilDisappeared: @ 81F1C9F
 
 Route111_Text_MauvilleUncleToldMeToTakeRockSmash: @ 81F1CCA
 	.string "Oh, no!\p"
-	.string "My uncle in MAUVILLE told me to take\n"
-	.string "ROCK SMASH with me if I was going to\l"
+	.string "My uncle in RUSTBORO told me to take\n"
+	.string "CUT with me if I was going to\l"
 	.string "ROUTE 111!\p"
-	.string "My uncle? He lives across from\n"
-	.string "the bike shop in MAUVILLE.$"
+	.string "My uncle? He lives next to\n"
+	.string "the POKéMON CENTER in RUSTBORO.$"
 
 Route111_Text_TrainerHillSign: @ 81F1D61
 	.string "{RIGHT_ARROW} TRAINER HILL ENTRANCE\p"

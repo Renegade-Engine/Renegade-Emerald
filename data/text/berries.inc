@@ -101,7 +101,7 @@ Route123_BerryMastersHouse_Text_WhyBeStingyTakeAnother: @ 82A7428
 
 Route123_BerryMastersHouse_Text_VisitPrettyPetalFlowerShop: @ 82A7445
 	.string "Be sure to visit the PRETTY PETAL\n"
-	.string "flower shop near RUSTBORO.\p"
+	.string "flower shop at ROUTE 123.\p"
 	.string "Let flowers fill the world!$"
 
 Route123_BerryMastersHouse_Text_DoneForToday: @ 82A749E
